@@ -5,8 +5,8 @@ using System.Text;
 
 namespace CipherTool.Parse
 {
-    public class ParseSetting
+    public class ParseSetting : OutputSetting
     {
-        public TextWriter OutputStream { get; set; } = Console.Out;
+
     }
 }

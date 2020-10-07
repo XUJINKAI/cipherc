@@ -136,13 +136,13 @@ namespace CipherTool.Parse
                     ExpressionType = typeof(SignCheckExpression);
                     break;
 
-                case "hex":
-                    EnumValue = DataFormat.Hex;
-                    break;
                 case "plain":
                 case "txt":
                 case "text":
                     EnumValue = DataFormat.Plain;
+                    break;
+                case "hex":
+                    EnumValue = DataFormat.Hex;
                     break;
                 case "base64":
                     EnumValue = DataFormat.Base64;

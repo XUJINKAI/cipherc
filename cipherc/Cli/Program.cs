@@ -19,6 +19,8 @@ namespace CipherTool.Cli
                     var line = Console.ReadLine();
                     var lineArgs = NativeMethods.CommandLineToArgs(line);
                     RunCmdArgs(lineArgs, parseSetting, evalSetting);
+                    Console.WriteLine();
+                    Console.WriteLine();
                 } while (true);
             }
             else if (args.Length > 0)

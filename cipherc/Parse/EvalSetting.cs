@@ -5,14 +5,8 @@ using System.Text;
 
 namespace CipherTool.Parse
 {
-    public class EvalSetting
+    public class EvalSetting : OutputSetting
     {
-        public TextWriter OutputStream { get; set; } = Console.Out;
 
-        public string AppendLine(string line)
-        {
-            OutputStream.WriteLine(line);
-            return line;
-        }
     }
 }

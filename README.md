@@ -1,6 +1,8 @@
-﻿# cipherc [WIP]
+﻿# cipherc
 
 A cross platform app to transform data fromat or do cryptographic operation.
+
+**WIP: not all designs are available now, see Unit Tests for demos.**
 
 e.g.
 
@@ -78,4 +80,4 @@ cipherc sm2 gen sign from hex 010203
 
 cipherc sm2 load key from hex 010203 get pk to hex
 
-cipherc sm4-gcm 
+cipherc sm4-gcm

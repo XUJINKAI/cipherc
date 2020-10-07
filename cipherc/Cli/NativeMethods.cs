@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CipherTool.Cli
 {
-    static class NativeMethods
+    public static class NativeMethods
     {
         [DllImport("shell32.dll", SetLastError = true)]
         private static extern IntPtr CommandLineToArgvW(
