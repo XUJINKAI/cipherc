@@ -9,6 +9,10 @@ namespace CipherTool.Parse
 
     public interface IExpression
     {
+        /// <summary>
+        /// true: Eval() is not null
+        /// </summary>
+        bool IsDataType { get; }
         IExpression? ParentExpression { get; }
 
         EvalFuncDelegate? EvalFunc { get; }

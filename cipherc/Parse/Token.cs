@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
+using CipherTool.Cipher;
 using CipherTool.Cli;
 using CipherTool.Exceptions;
-using Org.BouncyCastle.Crypto.Engines;
 
 namespace CipherTool.Parse
 {
@@ -95,14 +95,25 @@ namespace CipherTool.Parse
                 case "random":
                     ExpressionType = typeof(RandomExpression);
                     break;
-                case "sm2":
-                    ExpressionType = typeof(SM2Expression);
-                    break;
+
                 case "sm3":
-                    ExpressionType = typeof(SM3Expression);
+                    ExpressionType = typeof(HashExpression<SM3Hash>);
+                    break;
+                case "md5":
+                    ExpressionType = typeof(HashExpression<MD5Hash>);
+                    break;
+                case "sha1":
+                    ExpressionType = typeof(HashExpression<SHA1Hash>);
+                    break;
+                case "sha256":
+                    ExpressionType = typeof(HashExpression<SHA256Hash>);
+                    break;
+
+                case "sm2":
+                    ExpressionType = typeof(AsymExpression);
                     break;
                 case "sm4":
-                    ExpressionType = typeof(SM4Expression);
+                    ExpressionType = typeof(SymExpression);
                     break;
 
                 case "get":

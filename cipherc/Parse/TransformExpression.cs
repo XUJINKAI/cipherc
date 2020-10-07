@@ -16,12 +16,14 @@ namespace CipherTool.Parse
         public DataFormat? Format { get; private set; }
         public string? Arg { get; private set; }
 
+        public override bool IsDataType => true;
+
         public override void ContinueParse(Parser parser)
         {
             Contract.Assert(parser != null);
 
-            var token1 = parser.MoveNextTheToken();
-            var token2 = parser.MoveNextTheToken();
+            var token1 = parser.PopToken();
+            var token2 = parser.PopToken();
 
             if (token1.EnumValue is DataSource s1 && token2.EnumValue is DataFormat f1)
             {
@@ -47,7 +49,7 @@ namespace CipherTool.Parse
 
             if (Source == DataSource.File)
             {
-                var token3 = parser.MoveNextTheToken();
+                var token3 = parser.PopToken();
                 Arg = token3.Raw;
             }
 

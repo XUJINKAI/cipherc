@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CipherTool.Exceptions
 {
-    public class NoPipeInputException : Exception
+    public class NoPipeInputException : GeneralException
     {
     }
 }

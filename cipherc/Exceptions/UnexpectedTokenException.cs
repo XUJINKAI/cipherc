@@ -5,7 +5,7 @@ using CipherTool.Parse;
 
 namespace CipherTool.Exceptions
 {
-    public class UnexpectedTokenException : Exception
+    public class UnexpectedTokenException : GeneralException
     {
         public Token Token { get; private set; }
 

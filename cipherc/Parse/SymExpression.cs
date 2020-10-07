@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CipherTool.Parse
 {
-    class SM4Expression
+    class SymExpression
     {
     }
 }

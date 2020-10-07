@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CipherTool.Exceptions
 {
-    public class ExpectedMoreTokenException : Exception
+    public class ExpectedMoreTokenException : GeneralException
     {
         public ExpectedMoreTokenException(string message) : base(message)
         {

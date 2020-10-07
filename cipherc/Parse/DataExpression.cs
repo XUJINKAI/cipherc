@@ -15,12 +15,14 @@ namespace CipherTool.Parse
         public DataFormat? Format { get; private set; }
         public string? Arg { get; private set; }
 
+        public override bool IsDataType => true;
+
         public override void ContinueParse(Parser parser)
         {
             Contract.Assert(parser != null);
 
-            Token token1 = parser.MoveNextTheToken();
-            Token token2 = parser.MoveNextTheToken();
+            Token token1 = parser.PopToken();
+            Token token2 = parser.PopToken();
             if (token1.EnumValue is DataSource s1 && token2.EnumValue is DataFormat f1)
             {
                 Source = s1;
@@ -51,7 +53,7 @@ namespace CipherTool.Parse
             }
             else
             {
-                var token3 = parser.MoveNextTheToken();
+                var token3 = parser.PopToken();
                 arg = token3.Raw;
             }
 
@@ -83,15 +85,7 @@ namespace CipherTool.Parse
                 _ => s => throw new NotValidArgCombinationException(),
             };
 
-            if (ParentExpression == null
-                && parser.HasNextToken()
-                && parser.NextToken().ExpressionType == typeof(TransformExpression))
-            {
-                var token4 = parser.MoveNextTheToken();
-                var toExp = token4.MakeExpression(this);
-                toExp.ContinueParse(parser);
-                AddSubExpression(toExp);
-            }
+            ContinueProcess(parser);
         }
 
     }

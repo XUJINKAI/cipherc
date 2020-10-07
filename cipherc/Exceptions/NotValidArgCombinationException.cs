@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CipherTool.Exceptions
 {
-    public class NotValidArgCombinationException : Exception
+    public class NotValidArgCombinationException : GeneralException
     {
     }
 }

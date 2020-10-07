@@ -28,6 +28,19 @@ namespace CipherTool.Parse
             }
         }
 
+        private bool TryMoveNext()
+        {
+            if (Index + 1 >= Tokens.Count)
+            {
+                return false;
+            }
+            else
+            {
+                Index += 1;
+                return true;
+            }
+        }
+
         private Parser(string[] args, ParseSetting setting)
         {
             Tokens = new List<Token>();
@@ -36,11 +49,6 @@ namespace CipherTool.Parse
                 Tokens.Add(new Token(arg));
             }
             Setting = setting;
-        }
-
-        public Token CurrentToken()
-        {
-            return Tokens[Index];
         }
 
         public bool HasNextToken(int offset = 1)
@@ -66,49 +74,22 @@ namespace CipherTool.Parse
         }
 
         /// <summary>
-        /// MoveNext(1) => Next
-        /// </summary>
-        /// <param name="offset"></param>
-        public void MoveNext(int offset = 1)
-        {
-            Index += offset;
-        }
-
-        /// <summary>
-        /// MoveNext() and CurrentToken()
+        /// MoveNext then getToken
         /// </summary>
         /// <returns></returns>
-        public Token MoveNextTheToken()
+        public Token PopToken()
         {
             Index++;
             return Tokens[Index];
         }
 
-        public bool TryMoveNext()
-        {
-            if (Index + 1 >= Tokens.Count)
-            {
-                return false;
-            }
-            else
-            {
-                Index += 1;
-                return true;
-            }
-        }
-
-        private void Reset()
+        private Block StartParse()
         {
             Index = 0;
-        }
-
-        private Block RunParse()
-        {
-            Reset();
             var block = new Block();
             do
             {
-                var token = CurrentToken();
+                var token = Tokens[Index];
                 var exp = token.MakeExpression(null);
                 exp.ContinueParse(this);
                 block.AddExpression(exp);
@@ -116,11 +97,19 @@ namespace CipherTool.Parse
             return block;
         }
 
+        public IExpression PopExpression<T>(IExpression? parent) where T : IExpression
+        {
+            var token = PopToken();
+            var exp = token.MakeExpression(parent);
+            exp.ContinueParse(this);
+            return exp;
+        }
+
         public static Block Parse(string[] args, ParseSetting? setting = null)
         {
             Contract.Assert(args != null);
             Contract.Assert(args.Length > 0);
-            return new Parser(args, setting ?? new ParseSetting()).RunParse();
+            return new Parser(args, setting ?? new ParseSetting()).StartParse();
         }
     }
 }
