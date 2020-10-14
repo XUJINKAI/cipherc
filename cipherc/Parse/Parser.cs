@@ -1,115 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using CipherTool.Parse;
-using System.Linq;
-using CipherTool.Exceptions;
 using System.Diagnostics.Contracts;
+using System.Text;
 
 namespace CipherTool.Parse
 {
     public class Parser
     {
-        public ParseSetting Setting { get; private set; }
+        public ParseSetting Setting { get; }
 
-        private readonly IList<Token> Tokens;
+        public IReadOnlyList<string> InputArgs { get; }
 
-        private int _index = 0;
-        private int Index
+        public TokenStream TokenStream { get; }
+
+        private List<IExpression> Expressions { get; }
+
+        private Parser(string[] args, ParseSetting parseSetting)
         {
-            get => _index; set
-            {
-                if (Tokens.Count != 0 && value >= Tokens.Count)
-                {
-                    throw new ExpectedMoreTokenException();
-                }
-                _index = value;
-            }
+            Setting = parseSetting;
+            InputArgs = new List<string>(args);
+            TokenStream = new TokenStream(args);
+            Expressions = new List<IExpression>();
+            ParseTokensToExpressions();
         }
 
-        private bool TryMoveNext()
+        private void ParseTokensToExpressions()
         {
-            if (Index + 1 >= Tokens.Count)
-            {
-                return false;
-            }
-            else
-            {
-                Index += 1;
-                return true;
-            }
-        }
-
-        private Parser(string[] args, ParseSetting setting)
-        {
-            Tokens = new List<Token>();
-            foreach (var arg in args)
-            {
-                Tokens.Add(new Token(arg));
-            }
-            Setting = setting;
-        }
-
-        public bool HasNextToken(int offset = 1)
-        {
-            return Index + offset < Tokens.Count;
-        }
-
-        /// <summary>
-        /// NextToken(0) == CurrentToken()
-        /// </summary>
-        /// <param name="offset"></param>
-        /// <returns></returns>
-        public Token NextToken(int offset = 1)
-        {
-            if (Index + offset < Tokens.Count)
-            {
-                return Tokens[Index + offset];
-            }
-            else
-            {
-                throw new ExpectedMoreTokenException();
-            }
-        }
-
-        /// <summary>
-        /// MoveNext then getToken
-        /// </summary>
-        /// <returns></returns>
-        public Token PopToken()
-        {
-            Index++;
-            return Tokens[Index];
-        }
-
-        private Block StartParse()
-        {
-            Index = 0;
-            var block = new Block();
+            TokenStream.Reset();
+            Expressions.Clear();
             do
             {
-                var token = Tokens[Index];
+                var token = TokenStream.PopToken();
                 var exp = token.MakeExpression(null);
-                exp.ContinueParse(this);
-                block.AddExpression(exp);
-            } while (TryMoveNext());
-            return block;
+                exp.ContinueParse(TokenStream);
+                Expressions.Add(exp);
+            } while (TokenStream.TryMoveNext());
         }
 
-        public IExpression PopExpression<T>(IExpression? parent) where T : IExpression
-        {
-            var token = PopToken();
-            var exp = token.MakeExpression(parent);
-            exp.ContinueParse(this);
-            return exp;
-        }
+        public void Evaluate() => Expressions.ForEach(exp => exp.Eval());
 
-        public static Block Parse(string[] args, ParseSetting? setting = null)
+        public static Parser Eval(string[] args, ParseSetting? setting = null)
         {
             Contract.Assert(args != null);
             Contract.Assert(args.Length > 0);
-            return new Parser(args, setting ?? new ParseSetting()).StartParse();
+
+            setting ??= new ParseSetting();
+            var parser = new Parser(args, setting);
+            parser.Evaluate();
+            return parser;
         }
     }
 }

@@ -16,9 +16,9 @@ namespace CipherTool.Test
         public void TransFormat(string inputFormat, string outputFormat,
             string input, string assertOutput)
         {
-            TestOutput($"from {inputFormat} data {input} to {outputFormat} data", (p, e) =>
+            TestOutput($"from {inputFormat} data {input} to {outputFormat} data", (o, e) =>
             {
-                Assert.Equal(assertOutput, e);
+                Assert.Equal(assertOutput + ENDLINE, o);
             });
         }
     }

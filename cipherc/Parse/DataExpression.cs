@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
-using CipherTool.Cli;
 using CipherTool.Exceptions;
 
 namespace CipherTool.Parse
@@ -17,12 +16,12 @@ namespace CipherTool.Parse
 
         public override bool IsDataType => true;
 
-        public override void ContinueParse(Parser parser)
+        public override void ContinueParse(TokenStream tokenStream)
         {
-            Contract.Assert(parser != null);
+            Contract.Assert(tokenStream != null);
 
-            Token token1 = parser.PopToken();
-            Token token2 = parser.PopToken();
+            Token token1 = tokenStream.PopToken();
+            Token token2 = tokenStream.PopToken();
             if (token1.EnumValue is DataSource s1 && token2.EnumValue is DataFormat f1)
             {
                 Source = s1;
@@ -49,11 +48,11 @@ namespace CipherTool.Parse
 
             if (Source == DataSource.Pipe)
             {
-                arg = Util.GetPipeAllTextIn() ?? throw new NoPipeInputException();
+                arg = Helper.GetPipeAllTextIn() ?? throw new NoPipeInputException();
             }
             else
             {
-                var token3 = parser.PopToken();
+                var token3 = tokenStream.PopToken();
                 arg = token3.Raw;
             }
 
@@ -65,27 +64,27 @@ namespace CipherTool.Parse
 
             EvalFunc = (Source, Format) switch
             {
-                (DataSource.Arg, DataFormat.Plain) => s => Arg,
-                (DataSource.Arg, DataFormat.Hex) => s => Data.FromHexString(Arg),
-                (DataSource.Arg, DataFormat.Base64) => s => Data.FromBase64String(Arg),
-                (DataSource.Arg, DataFormat.Bin) => s => throw new NotValidArgCombinationException(),
-                (DataSource.Arg, DataFormat.Pem) => s => throw new NotValidArgCombinationException(),
+                (DataSource.Arg, DataFormat.Plain) => () => Arg,
+                (DataSource.Arg, DataFormat.Hex) => () => Data.FromHexString(Arg),
+                (DataSource.Arg, DataFormat.Base64) => () => Data.FromBase64String(Arg),
+                (DataSource.Arg, DataFormat.Bin) => () => throw new NotValidArgCombinationException(),
+                (DataSource.Arg, DataFormat.Pem) => () => throw new NotValidArgCombinationException(),
 
-                (DataSource.File, DataFormat.Plain) => s => File.ReadAllText(Arg),
-                (DataSource.File, DataFormat.Hex) => s => Data.FromHexString(File.ReadAllText(Arg)),
-                (DataSource.File, DataFormat.Base64) => s => Data.FromBase64String(File.ReadAllText(Arg)),
-                (DataSource.File, DataFormat.Bin) => s => File.ReadAllBytes(Arg),
-                (DataSource.File, DataFormat.Pem) => s => throw new NotValidArgCombinationException(),
+                (DataSource.File, DataFormat.Plain) => () => File.ReadAllText(Arg),
+                (DataSource.File, DataFormat.Hex) => () => Data.FromHexString(File.ReadAllText(Arg)),
+                (DataSource.File, DataFormat.Base64) => () => Data.FromBase64String(File.ReadAllText(Arg)),
+                (DataSource.File, DataFormat.Bin) => () => File.ReadAllBytes(Arg),
+                (DataSource.File, DataFormat.Pem) => () => throw new NotValidArgCombinationException(),
 
-                (DataSource.Pipe, DataFormat.Plain) => s => Arg,
-                (DataSource.Pipe, DataFormat.Hex) => s => Data.FromHexString(Arg),
-                (DataSource.Pipe, DataFormat.Base64) => s => Data.FromBase64String(Arg),
-                (DataSource.Pipe, DataFormat.Bin) => s => throw new NotValidArgCombinationException(),
-                (DataSource.Pipe, DataFormat.Pem) => s => throw new NotValidArgCombinationException(),
-                _ => s => throw new NotValidArgCombinationException(),
+                (DataSource.Pipe, DataFormat.Plain) => () => Arg,
+                (DataSource.Pipe, DataFormat.Hex) => () => Data.FromHexString(Arg),
+                (DataSource.Pipe, DataFormat.Base64) => () => Data.FromBase64String(Arg),
+                (DataSource.Pipe, DataFormat.Bin) => () => throw new NotValidArgCombinationException(),
+                (DataSource.Pipe, DataFormat.Pem) => () => throw new NotValidArgCombinationException(),
+                _ => () => throw new NotValidArgCombinationException(),
             };
 
-            ContinueProcess(parser);
+            ContinueProcess(tokenStream);
         }
 
     }

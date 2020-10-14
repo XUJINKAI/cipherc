@@ -16,42 +16,41 @@ namespace CipherTool.Test
             TestOutputHelper = output;
         }
 
+        public string ENDLINE { get; } = "\n";
+
         protected void TestOutput(string arg, Action<string, string> AssertFunc)
         {
             TestOutputHelper.WriteLine("Running command...");
             TestOutputHelper.WriteLine(arg);
             TestOutputHelper.WriteLine("");
 
-            var parseStream = new MemoryStream();
-            var evalStream = new MemoryStream();
+            var outputStream = new MemoryStream();
+            var errorStream = new MemoryStream();
+            var outputWriter = new StreamWriter(outputStream) { AutoFlush = true };
+            var errorWriter = new StreamWriter(errorStream) { AutoFlush = true };
+            Log.OutputStream = outputWriter;
+            Log.ErrorStream = errorWriter;
+            Log.EndOfLine = ENDLINE;
 
             var parseSetting = new ParseSetting()
             {
-                OutputStream = new StreamWriter(parseStream) { AutoFlush = true },
             };
-            var evalSetting = new EvalSetting()
-            {
-                OutputStream = new StreamWriter(evalStream) { AutoFlush = true },
-            };
+            var args = NativeMethods.CommandLineToArgs(arg);
 
-            var args = Cli.NativeMethods.CommandLineToArgs(arg);
-            var block = Parser.Parse(args, parseSetting);
-            block.Eval(evalSetting);
+            Parser.Eval(args, parseSetting);
 
-            parseStream.Position = 0;
-            evalStream.Position = 0;
-            var parseOutput = new StreamReader(parseStream).ReadToEnd();
-            var evalOutput = new StreamReader(evalStream).ReadToEnd();
+            outputStream.Position = 0;
+            errorStream.Position = 0;
+            var output = new StreamReader(outputStream).ReadToEnd();
+            var error = new StreamReader(errorStream).ReadToEnd();
 
-            TestOutputHelper.WriteLine("Parse Output:");
-            TestOutputHelper.WriteLine(parseOutput);
-            TestOutputHelper.WriteLine("");
+            TestOutputHelper.WriteLine("Output:");
+            TestOutputHelper.WriteLine(output);
 
-            TestOutputHelper.WriteLine("Eval Output:");
-            TestOutputHelper.WriteLine(evalOutput);
-            TestOutputHelper.WriteLine("");
+            TestOutputHelper.WriteLine("Error:");
+            TestOutputHelper.WriteLine(error);
 
-            AssertFunc.Invoke(parseOutput, evalOutput);
+            AssertFunc.Invoke(output, error);
         }
     }
 }

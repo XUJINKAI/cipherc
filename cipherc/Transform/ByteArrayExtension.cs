@@ -34,7 +34,7 @@ namespace CipherTool.Transform
 
         public static string ToHexString(this byte[] array, string sep = "")
         {
-            return BitConverter.ToString(array).Replace("-", sep);
+            return BitConverter.ToString(array).Replace("-", sep, StringComparison.Ordinal);
         }
 
         public static string ToBase64String(this byte[] array)

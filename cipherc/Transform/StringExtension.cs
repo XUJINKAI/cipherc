@@ -28,7 +28,7 @@ namespace CipherTool.Transform
         {
             if (str == null) throw new ArgumentNullException(nameof(str));
             if (sub == null) throw new ArgumentNullException(nameof(sub));
-            return str.IndexOf(sub, StringComparison.OrdinalIgnoreCase) >= 0;
+            return str.Contains(sub, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

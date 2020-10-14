@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
 using CipherTool.Cipher;
-using CipherTool.Cli;
 using CipherTool.Exceptions;
 
 namespace CipherTool.Parse

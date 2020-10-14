@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CipherTool.Cli
+namespace CipherTool
 {
-    public static class Util
+    public static class Helper
     {
         public static string? GetPipeAllTextIn()
         {

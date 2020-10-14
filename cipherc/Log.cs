@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Colorful;
-using Console = Colorful.Console;
 
 namespace CipherTool
 {
@@ -20,23 +19,21 @@ namespace CipherTool
 
     public static class Log
     {
-        private static void OnWriting(string msg)
+        public static string EndOfLine { get; set; } = Environment.NewLine;
+        public static TextWriter OutputStream { get; set; } = Console.Out;
+        public static TextWriter ErrorStream { get; set; } = Console.Error;
+
+        public static void OutputDataLine(string line)
         {
-            Console.Write(msg);
+            OutputStream.Write(line + EndOfLine);
         }
 
         private static void OnLogging(string msg, DateTime dateTime, LogLevel level, string MN, string FP, int LN)
         {
-            Console.WriteLine($"{dateTime:yyyyMMddHHmmSS} {level} {msg} {CodeLocation(MN, FP, LN)}");
+            ErrorStream.WriteLine($"{dateTime:yyyyMMddHHmmSS} {level} {msg} {CodeLocation(MN, FP, LN)}");
         }
 
-        private static string CodeLocation(string CallerMemberName, string CallerFilePath, int CallerLineNumber)
-        {
-            return $"{CallerMemberName} in {CallerFilePath}#{CallerLineNumber}";
-        }
-
-        public static void Write(string msg) => OnWriting(msg);
-        public static void WriteLine(string msg = "") => OnWriting(msg + Environment.NewLine);
+        private static string CodeLocation(string CallerMemberName, string CallerFilePath, int CallerLineNumber) => $"{CallerMemberName} in {CallerFilePath}#{CallerLineNumber}";
 
         public static void Fatal(string msg, [CallerMemberName] string MN = "", [CallerFilePath] string FP = "", [CallerLineNumber] int LN = 0)
             => OnLogging(msg, DateTime.Now, LogLevel.Fatal, MN, FP, LN);

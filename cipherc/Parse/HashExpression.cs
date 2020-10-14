@@ -18,14 +18,14 @@ namespace CipherTool.Parse
 
         public override bool IsDataType => true;
 
-        public override void ContinueParse(Parser parser)
+        public override void ContinueParse(TokenStream parser)
         {
             Contract.Assert(parser != null);
 
             var dataExp = parser.PopExpression<DataExpression>(this);
-            EvalFunc = (s) =>
+            EvalFunc = () =>
             {
-                var d = dataExp.Eval(s);
+                var d = dataExp.Eval();
                 return HashObj.DoHash(d.Value);
             };
 

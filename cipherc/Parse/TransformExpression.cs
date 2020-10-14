@@ -18,7 +18,7 @@ namespace CipherTool.Parse
 
         public override bool IsDataType => true;
 
-        public override void ContinueParse(Parser parser)
+        public override void ContinueParse(TokenStream parser)
         {
             Contract.Assert(parser != null);
 
@@ -55,17 +55,17 @@ namespace CipherTool.Parse
 
             EvalFuncDelegate MakeArgDelegate(Func<Data, string> func)
             {
-                return (s) =>
+                return () =>
                 {
                     Contract.Assert(ParentExpression != null);
                     var r = ParentExpression.EvalResult;
-                    s.AppendLine(func(r.Value));
+                    Log.OutputDataLine(func(r.Value));
                     return r;
                 };
             }
             EvalFuncDelegate MakeFileDelegate(Action<Data> func)
             {
-                return (s) =>
+                return () =>
                 {
                     Contract.Assert(ParentExpression != null);
                     var r = ParentExpression.EvalResult;

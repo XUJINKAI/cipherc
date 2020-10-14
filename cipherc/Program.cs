@@ -3,14 +3,13 @@ using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using CipherTool.Parse;
 
-namespace CipherTool.Cli
+namespace CipherTool
 {
     internal class Program
     {
         static void Main(string[] args)
         {
             var parseSetting = new ParseSetting();
-            var evalSetting = new EvalSetting();
             if (args.Length == 1 && args[0].ToLower(ENV.CultureInfo) == "shell")
             {
                 do
@@ -18,14 +17,14 @@ namespace CipherTool.Cli
                     Console.Write("> ");
                     var line = Console.ReadLine();
                     var lineArgs = NativeMethods.CommandLineToArgs(line);
-                    RunCmdArgs(lineArgs, parseSetting, evalSetting);
+                    RunCmdArgs(lineArgs, parseSetting);
                     Console.WriteLine();
                     Console.WriteLine();
                 } while (true);
             }
             else if (args.Length > 0)
             {
-                RunCmdArgs(args, parseSetting, evalSetting);
+                RunCmdArgs(args, parseSetting);
             }
             else
             {
@@ -33,12 +32,11 @@ namespace CipherTool.Cli
             }
         }
 
-        static void RunCmdArgs(string[] args, ParseSetting parseSetting, EvalSetting evalSetting)
+        static void RunCmdArgs(string[] args, ParseSetting parseSetting)
         {
             try
             {
-                var block = Parser.Parse(args, parseSetting);
-                block.Eval(evalSetting);
+                Parser.Eval(args, parseSetting);
             }
             catch (Exception ex)
             {

@@ -18,22 +18,21 @@ namespace CipherTool.Parse
 
         private readonly List<IExpression> SubExpressions = new List<IExpression>();
 
-        public virtual Data? Eval(EvalSetting setting)
+        public virtual Data? Eval()
         {
-            Contract.Assume(setting != null);
             Contract.Assert(EvalFunc != null);
-            EvalResult = EvalFunc.Invoke(setting);
+            EvalResult = EvalFunc.Invoke();
             foreach (var sub in SubExpressions)
             {
-                sub.Eval(setting);
+                sub.Eval();
             }
             if (IsDataType
                 && (ParentExpression == null || !ParentExpression.IsDataType)
                 && SubExpressions.Count == 0)
             {
                 Contract.Assume(EvalResult != null);
-                setting.AppendLine($"Output(HEX): {EvalResult.Value.ToHexString()}");
-                setting.AppendLine($"Output(B64): {EvalResult.Value.ToBase64String()}");
+                Log.OutputDataLine($"Output(HEX): {EvalResult.Value.ToHexString()}");
+                Log.OutputDataLine($"Output(B64): {EvalResult.Value.ToBase64String()}");
             }
             return EvalResult;
         }
@@ -50,9 +49,9 @@ namespace CipherTool.Parse
             SubExpressions.Add(expression);
         }
 
-        public abstract void ContinueParse(Parser parser);
+        public abstract void ContinueParse(TokenStream parser);
 
-        protected void ContinueProcess(Parser parser)
+        protected void ContinueProcess(TokenStream parser)
         {
             Contract.Assert(parser != null);
 
