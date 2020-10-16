@@ -12,64 +12,88 @@ namespace CipherTool.Parse
 
         public IExpression? ParentExpression { get; private set; }
 
-        public EvalFuncDelegate? EvalFunc { get; protected set; }
+        protected List<IExpression> SubExpressions { get; } = new List<IExpression>();
+        protected List<IExpression> DataOperateExpressions { get; } = new List<IExpression>();
 
-        public Data? EvalResult { get; private set; }
+        private Data? EvalCache { get; set; }
 
-        private readonly List<IExpression> SubExpressions = new List<IExpression>();
-
-        public virtual Data? Eval()
+        public void CheckRules()
         {
-            Contract.Assert(EvalFunc != null);
-            EvalResult = EvalFunc.Invoke();
-            foreach (var sub in SubExpressions)
+            if (IsDataType)
             {
-                sub.Eval();
+                Contract.Assert(SubExpressions.Count == 0);
+
+                if (ParentExpression == null)
+                {
+                    Contract.Assert(DataOperateExpressions.Count != 0);
+                }
+                else
+                {
+                    Contract.Assert(DataOperateExpressions.Count == 0);
+                }
             }
-            if (IsDataType
-                && (ParentExpression == null || !ParentExpression.IsDataType)
-                && SubExpressions.Count == 0)
+            else
             {
-                Contract.Assume(EvalResult != null);
-                Log.OutputDataLine($"Output(HEX): {EvalResult.Value.ToHexString()}");
-                Log.OutputDataLine($"Output(B64): {EvalResult.Value.ToBase64String()}");
+                Contract.Assert(ParentExpression == null);
+                Contract.Assert(SubExpressions.Count != 0);
+                Contract.Assert(DataOperateExpressions.Count == 0);
             }
-            return EvalResult;
         }
 
         public void SetParentExpression(IExpression? parent)
         {
-            ParentExpression = ParentExpression == null
-                ? parent
-                : throw new GeneralException("Property is already set.");
+            Contract.Assert(ParentExpression == null);
+            ParentExpression = parent;
         }
 
-        protected void AddSubExpression(IExpression expression)
+        public void Parse(TokenStream tokenStream)
         {
-            SubExpressions.Add(expression);
-        }
+            Contract.Assert(tokenStream != null);
 
-        public abstract void ContinueParse(TokenStream parser);
-
-        protected void ContinueProcess(TokenStream parser)
-        {
-            Contract.Assert(parser != null);
+            SelfParse(tokenStream);
 
             if (IsDataType)
             {
                 if (ParentExpression == null || !ParentExpression.IsDataType)
                 {
-                    while (parser.HasNextToken()
-                        && parser.NextToken().ExpressionType == typeof(TransformExpression))
+                    while (tokenStream.HasNextToken()
+                        && tokenStream.NextToken().ExpressionType == typeof(TransformExpression))
                     {
-                        var token = parser.PopToken();
+                        var token = tokenStream.PopToken();
                         var exp = token.MakeExpression(this);
-                        exp.ContinueParse(parser);
-                        AddSubExpression(exp);
+                        exp.Parse(tokenStream);
+                        DataOperateExpressions.Add(exp);
                     }
                 }
             }
         }
 
+        protected abstract void SelfParse(TokenStream tokenStream);
+
+        public Data? Eval()
+        {
+            if (EvalCache != null)
+            {
+                return EvalCache;
+
+            }
+            EvalCache = SelfEval();
+
+            foreach (var sub in DataOperateExpressions)
+            {
+                sub.Eval();
+            }
+            if (IsDataType
+                && (ParentExpression == null || !ParentExpression.IsDataType)
+                && DataOperateExpressions.Count == 0)
+            {
+                Contract.Assume(EvalCache != null);
+                Log.OutputDataLine($"Output(HEX): {EvalCache.Value.ToHexString()}");
+                Log.OutputDataLine($"Output(B64): {EvalCache.Value.ToBase64String()}");
+            }
+            return EvalCache;
+        }
+
+        protected abstract Data? SelfEval();
     }
 }

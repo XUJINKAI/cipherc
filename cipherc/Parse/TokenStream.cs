@@ -83,12 +83,16 @@ namespace CipherTool.Parse
             return Tokens[Index];
         }
 
-        public IExpression PopExpression<T>(IExpression? parent) where T : IExpression
+        public T PopExpression<T>(IExpression? parent) where T : IExpression
         {
             var token = PopToken();
             var exp = token.MakeExpression(parent);
-            exp.ContinueParse(this);
-            return exp;
+            exp.Parse(this);
+            if (exp is T t)
+            {
+                return t;
+            }
+            throw new UnexpectedTokenException(token);
         }
     }
 }

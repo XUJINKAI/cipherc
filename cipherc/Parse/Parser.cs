@@ -32,7 +32,7 @@ namespace CipherTool.Parse
             {
                 var token = TokenStream.PopToken();
                 var exp = token.MakeExpression(null);
-                exp.ContinueParse(TokenStream);
+                exp.Parse(TokenStream);
                 Expressions.Add(exp);
             } while (TokenStream.TryMoveNext());
         }

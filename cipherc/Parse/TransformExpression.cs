@@ -18,12 +18,12 @@ namespace CipherTool.Parse
 
         public override bool IsDataType => true;
 
-        public override void ContinueParse(TokenStream parser)
+        protected override void SelfParse(TokenStream tokenStream)
         {
-            Contract.Assert(parser != null);
+            Contract.Assert(tokenStream != null);
 
-            var token1 = parser.PopToken();
-            var token2 = parser.PopToken();
+            var token1 = tokenStream.PopToken();
+            var token2 = tokenStream.PopToken();
 
             if (token1.EnumValue is DataSource s1 && token2.EnumValue is DataFormat f1)
             {
@@ -49,32 +49,30 @@ namespace CipherTool.Parse
 
             if (Source == DataSource.File)
             {
-                var token3 = parser.PopToken();
+                var token3 = tokenStream.PopToken();
                 Arg = token3.Raw;
             }
 
-            EvalFuncDelegate MakeArgDelegate(Func<Data, string> func)
+        }
+
+        protected override Data? SelfEval()
+        {
+            Data? MakeArgDelegate(Func<Data, string> func)
             {
-                return () =>
-                {
-                    Contract.Assert(ParentExpression != null);
-                    var r = ParentExpression.EvalResult;
-                    Log.OutputDataLine(func(r.Value));
-                    return r;
-                };
+                Contract.Assume(ParentExpression != null);
+                var r = ParentExpression.Eval();
+                Log.OutputDataLine(func(r.Value));
+                return r;
             }
-            EvalFuncDelegate MakeFileDelegate(Action<Data> func)
+            Data? MakeFileDelegate(Action<Data> func)
             {
-                return () =>
-                {
-                    Contract.Assert(ParentExpression != null);
-                    var r = ParentExpression.EvalResult;
-                    func(r.Value);
-                    return r;
-                };
+                Contract.Assume(ParentExpression != null);
+                var r = ParentExpression.Eval();
+                func(r.Value);
+                return null;
             }
 
-            EvalFunc = (Format, Source) switch
+            return (Format, Source) switch
             {
                 (DataFormat.Plain, DataSource.Arg) => MakeArgDelegate(d => d.ToAsciiString()),
                 (DataFormat.Hex, DataSource.Arg) => MakeArgDelegate(d => d.ToHexString()),

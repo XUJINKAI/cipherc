@@ -17,8 +17,8 @@ namespace CipherTool
                     Console.Write("> ");
                     var line = Console.ReadLine();
                     var lineArgs = NativeMethods.CommandLineToArgs(line);
+                    if (lineArgs.Length == 0) { continue; }
                     RunCmdArgs(lineArgs, parseSetting);
-                    Console.WriteLine();
                     Console.WriteLine();
                 } while (true);
             }

@@ -5,8 +5,6 @@ using System.Text;
 
 namespace CipherTool.Parse
 {
-    public delegate Data? EvalFuncDelegate();
-
     public interface IExpression
     {
         /// <summary>
@@ -15,17 +13,15 @@ namespace CipherTool.Parse
         bool IsDataType { get; }
         IExpression? ParentExpression { get; }
 
-        EvalFuncDelegate? EvalFunc { get; }
-        Data? EvalResult { get; }
-
-        Data? Eval();
+        void SetParentExpression(IExpression? parent);
 
         /// <summary>
         /// 开始于NextToken(), 结束于CurrentToken()，即结束时不执行MoveNext()
         /// </summary>
         /// <param name="tokenStream"></param>
-        void ContinueParse(TokenStream tokenStream);
-        void SetParentExpression(IExpression? parent);
+        void Parse(TokenStream tokenStream);
+
+        Data? Eval();
     }
 
 }

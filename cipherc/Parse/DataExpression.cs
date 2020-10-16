@@ -16,9 +16,9 @@ namespace CipherTool.Parse
 
         public override bool IsDataType => true;
 
-        public override void ContinueParse(TokenStream tokenStream)
+        protected override void SelfParse(TokenStream tokenStream)
         {
-            Contract.Assert(tokenStream != null);
+            Contract.Assume(tokenStream != null);
 
             Token token1 = tokenStream.PopToken();
             Token token2 = tokenStream.PopToken();
@@ -57,35 +57,36 @@ namespace CipherTool.Parse
             }
 
             Arg = arg;
-            if (Source == DataSource.File && !File.Exists(arg))
-            {
-                throw new FileNotFoundException(arg);
-            }
-
-            EvalFunc = (Source, Format) switch
-            {
-                (DataSource.Arg, DataFormat.Plain) => () => Arg,
-                (DataSource.Arg, DataFormat.Hex) => () => Data.FromHexString(Arg),
-                (DataSource.Arg, DataFormat.Base64) => () => Data.FromBase64String(Arg),
-                (DataSource.Arg, DataFormat.Bin) => () => throw new NotValidArgCombinationException(),
-                (DataSource.Arg, DataFormat.Pem) => () => throw new NotValidArgCombinationException(),
-
-                (DataSource.File, DataFormat.Plain) => () => File.ReadAllText(Arg),
-                (DataSource.File, DataFormat.Hex) => () => Data.FromHexString(File.ReadAllText(Arg)),
-                (DataSource.File, DataFormat.Base64) => () => Data.FromBase64String(File.ReadAllText(Arg)),
-                (DataSource.File, DataFormat.Bin) => () => File.ReadAllBytes(Arg),
-                (DataSource.File, DataFormat.Pem) => () => throw new NotValidArgCombinationException(),
-
-                (DataSource.Pipe, DataFormat.Plain) => () => Arg,
-                (DataSource.Pipe, DataFormat.Hex) => () => Data.FromHexString(Arg),
-                (DataSource.Pipe, DataFormat.Base64) => () => Data.FromBase64String(Arg),
-                (DataSource.Pipe, DataFormat.Bin) => () => throw new NotValidArgCombinationException(),
-                (DataSource.Pipe, DataFormat.Pem) => () => throw new NotValidArgCombinationException(),
-                _ => () => throw new NotValidArgCombinationException(),
-            };
-
-            ContinueProcess(tokenStream);
         }
 
+        protected override Data? SelfEval()
+        {
+            if (Source == DataSource.File && !File.Exists(Arg))
+            {
+                throw new FileNotFoundException(Arg);
+            }
+
+            return (Source, Format) switch
+            {
+                (DataSource.Arg, DataFormat.Plain) => Arg,
+                (DataSource.Arg, DataFormat.Hex) => Data.FromHexString(Arg),
+                (DataSource.Arg, DataFormat.Base64) => Data.FromBase64String(Arg),
+                (DataSource.Arg, DataFormat.Bin) => throw new NotValidArgCombinationException(),
+                (DataSource.Arg, DataFormat.Pem) => throw new NotValidArgCombinationException(),
+
+                (DataSource.File, DataFormat.Plain) => File.ReadAllText(Arg),
+                (DataSource.File, DataFormat.Hex) => Data.FromHexString(File.ReadAllText(Arg)),
+                (DataSource.File, DataFormat.Base64) => Data.FromBase64String(File.ReadAllText(Arg)),
+                (DataSource.File, DataFormat.Bin) => File.ReadAllBytes(Arg),
+                (DataSource.File, DataFormat.Pem) => throw new NotValidArgCombinationException(),
+
+                (DataSource.Pipe, DataFormat.Plain) => Arg,
+                (DataSource.Pipe, DataFormat.Hex) => Data.FromHexString(Arg),
+                (DataSource.Pipe, DataFormat.Base64) => Data.FromBase64String(Arg),
+                (DataSource.Pipe, DataFormat.Bin) => throw new NotValidArgCombinationException(),
+                (DataSource.Pipe, DataFormat.Pem) => throw new NotValidArgCombinationException(),
+                _ => throw new NotValidArgCombinationException(),
+            };
+        }
     }
 }

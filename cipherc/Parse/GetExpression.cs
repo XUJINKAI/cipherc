@@ -8,7 +8,7 @@ namespace CipherTool.Parse
     {
         public override bool IsDataType => false;
 
-        public override void ContinueParse(TokenStream parser) => throw new NotImplementedException();
-
+        protected override void SelfParse(TokenStream tokenStream) => throw new NotImplementedException();
+        protected override Data? SelfEval() => throw new NotImplementedException();
     }
 }

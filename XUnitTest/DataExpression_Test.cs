@@ -11,6 +11,7 @@ namespace CipherTool.Test
         }
 
         [Theory]
+        [InlineData("hex", "plain", "31323301FF", "123\x01?")]
         [InlineData("plain", "hex", "1234567890", "31323334353637383930")]
         [InlineData("plain", "base64", "1234567890", "MTIzNDU2Nzg5MA==")]
         public void TransFormat(string inputFormat, string outputFormat,

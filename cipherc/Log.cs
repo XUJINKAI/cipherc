@@ -28,12 +28,18 @@ namespace CipherTool
             OutputStream.Write(line + EndOfLine);
         }
 
+#pragma warning disable IDE0051 // 删除未使用的私有成员
+#pragma warning disable IDE0060 // 删除未使用的参数
+#pragma warning disable CA1801 // 检查未使用的参数
         private static void OnLogging(string msg, DateTime dateTime, LogLevel level, string MN, string FP, int LN)
         {
-            ErrorStream.WriteLine($"{dateTime:yyyyMMddHHmmSS} {level} {msg} {CodeLocation(MN, FP, LN)}");
+            ErrorStream.WriteLine($"[{level}] {msg}");
         }
 
         private static string CodeLocation(string CallerMemberName, string CallerFilePath, int CallerLineNumber) => $"{CallerMemberName} in {CallerFilePath}#{CallerLineNumber}";
+#pragma warning restore IDE0060 // 删除未使用的参数
+#pragma warning restore CA1801 // 检查未使用的参数
+#pragma warning restore IDE0051 // 删除未使用的私有成员
 
         public static void Fatal(string msg, [CallerMemberName] string MN = "", [CallerFilePath] string FP = "", [CallerLineNumber] int LN = 0)
             => OnLogging(msg, DateTime.Now, LogLevel.Fatal, MN, FP, LN);

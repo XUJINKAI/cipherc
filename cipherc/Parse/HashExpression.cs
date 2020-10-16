@@ -11,6 +11,8 @@ namespace CipherTool.Parse
     {
         private IHash HashObj { get; set; }
 
+        public DataExpression? HashData { get; set; }
+
         public HashExpression()
         {
             HashObj = Activator.CreateInstance<T>();
@@ -18,19 +20,18 @@ namespace CipherTool.Parse
 
         public override bool IsDataType => true;
 
-        public override void ContinueParse(TokenStream parser)
+        protected override void SelfParse(TokenStream tokenStream)
         {
-            Contract.Assert(parser != null);
-
-            var dataExp = parser.PopExpression<DataExpression>(this);
-            EvalFunc = () =>
-            {
-                var d = dataExp.Eval();
-                return HashObj.DoHash(d.Value);
-            };
-
-            ContinueProcess(parser);
+            Contract.Assume(tokenStream != null);
+            HashData = tokenStream.PopExpression<DataExpression>(this);
         }
+        protected override Data? SelfEval()
+        {
+            Contract.Assume(HashData != null);
+            var data = HashData.Eval();
 
+            Contract.Assume(data != null);
+            return HashObj.DoHash(data.Value);
+        }
     }
 }
