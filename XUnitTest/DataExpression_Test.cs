@@ -11,6 +11,18 @@ namespace CipherTool.Test
         }
 
         [Theory]
+        [InlineData("hex", "31323301FF", "31323301FF")]
+        [InlineData("plain", "1234567890", "31323334353637383930")]
+        [InlineData("base64", "MTIzNDU2Nzg5MA==", "31323334353637383930")]
+        public void LoadData(string inputFormat, string input, string assertOutput)
+        {
+            TestOutput($"from {inputFormat} data {input}", (o, e) =>
+            {
+                Assert.Equal(assertOutput + ENDLINE, o);
+            });
+        }
+
+        [Theory]
         [InlineData("hex", "plain", "31323301FF", "123\x01?")]
         [InlineData("plain", "hex", "1234567890", "31323334353637383930")]
         [InlineData("plain", "base64", "1234567890", "MTIzNDU2Nzg5MA==")]

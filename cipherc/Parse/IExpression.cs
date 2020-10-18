@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace CipherTool.Parse
 {
-    public interface IExpression
+    public interface IExpression : IUnit, ISentenceRoot
     {
-        /// <summary>
-        /// true: Eval() is not null
-        /// </summary>
-        bool IsDataType { get; }
-        IExpression? ParentExpression { get; }
+        Data Eval();
 
-        void SetParentExpression(IExpression? parent);
+        IList<IDataPostfix> Postfixes { get; }
 
-        /// <summary>
-        /// 开始于NextToken(), 结束于CurrentToken()，即结束时不执行MoveNext()
-        /// </summary>
-        /// <param name="tokenStream"></param>
-        void Parse(TokenStream tokenStream);
+        void ContinueParseExpression(Parser parser, bool allowPostfixes);
 
-        Data? Eval();
+        public static IDataPostfix GetDefaultDataPostfix()
+        {
+            return new DataTransformPostfix();
+        }
     }
 
 }

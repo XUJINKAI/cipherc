@@ -30,9 +30,11 @@ namespace CipherTool.Parse
         {
             Contract.Assert(args != null);
             Tokens = new List<Token>();
+            int idx = 0;
             foreach (var arg in args)
             {
-                Tokens.Add(new Token(arg));
+                idx++;
+                Tokens.Add(new Token(arg, idx));
             }
         }
 
@@ -81,18 +83,6 @@ namespace CipherTool.Parse
         {
             Index++;
             return Tokens[Index];
-        }
-
-        public T PopExpression<T>(IExpression? parent) where T : IExpression
-        {
-            var token = PopToken();
-            var exp = token.MakeExpression(parent);
-            exp.Parse(this);
-            if (exp is T t)
-            {
-                return t;
-            }
-            throw new UnexpectedTokenException(token);
         }
     }
 }

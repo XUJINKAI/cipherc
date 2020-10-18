@@ -4,7 +4,10 @@ using System.Text;
 
 namespace CipherTool.Parse
 {
-    public class SetExpression
+    public interface IUnit
     {
+        IList<Token> Tokens { get; }
+
+        void AppendParseToken(Token token);
     }
 }

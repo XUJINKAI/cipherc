@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CipherTool.Parse
 {
-    public class AsymExpression
+    public interface ISpliter : IUnit
     {
     }
 }

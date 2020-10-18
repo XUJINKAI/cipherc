@@ -10,34 +10,42 @@ using CipherTool.Exceptions;
 
 namespace CipherTool.Parse
 {
-    public class TransformExpression : ExpressionBase, IExpression
+    public class DataTransformPostfix : BaseUnit, IDataPostfix
     {
         public DataSource? Source { get; private set; }
         public DataFormat? Format { get; private set; }
         public string? Arg { get; private set; }
 
-        public override bool IsDataType => true;
 
-        protected override void SelfParse(TokenStream tokenStream)
+        public DataTransformPostfix() { }
+
+        public DataTransformPostfix(DataFormat format, DataSource source, string? arg = null)
         {
-            Contract.Assert(tokenStream != null);
+            Format = format;
+            Source = source;
+            Arg = arg;
+        }
 
-            var token1 = tokenStream.PopToken();
-            var token2 = tokenStream.PopToken();
+        public void ContinueParse(Parser parser)
+        {
+            Contract.Assert(parser != null);
 
-            if (token1.EnumValue is DataSource s1 && token2.EnumValue is DataFormat f1)
+            var enum1 = parser.PopEnum(out var token1);
+            var enum2 = parser.PopEnum(out var token2);
+
+            if (enum1 is DataSource s1 && enum2 is DataFormat f1)
             {
                 Source = s1;
                 Format = f1;
             }
-            else if (token1.EnumValue is DataFormat f2 && token2.EnumValue is DataSource s2)
+            else if (enum1 is DataFormat f2 && enum2 is DataSource s2)
             {
                 Source = s2;
                 Format = f2;
             }
             else
             {
-                if (token1.EnumValue is DataSource || token1.EnumValue is DataFormat)
+                if (enum1 is DataSource || enum1 is DataFormat)
                 {
                     throw new UnexpectedTokenException(token2);
                 }
@@ -49,30 +57,27 @@ namespace CipherTool.Parse
 
             if (Source == DataSource.File)
             {
-                var token3 = tokenStream.PopToken();
-                Arg = token3.Raw;
+                Arg = parser.PopString();
             }
-
         }
 
-        protected override Data? SelfEval()
+        public void Eval(IExpression parent)
         {
+            Contract.Assume(parent != null);
             Data? MakeArgDelegate(Func<Data, string> func)
             {
-                Contract.Assume(ParentExpression != null);
-                var r = ParentExpression.Eval();
-                Log.OutputDataLine(func(r.Value));
-                return r;
+                var data = parent.Eval();
+                Log.OutputDataLine(func(data));
+                return data;
             }
             Data? MakeFileDelegate(Action<Data> func)
             {
-                Contract.Assume(ParentExpression != null);
-                var r = ParentExpression.Eval();
-                func(r.Value);
+                var data = parent.Eval();
+                func(data);
                 return null;
             }
 
-            return (Format, Source) switch
+            _ = ((Format, Source) switch
             {
                 (DataFormat.Plain, DataSource.Arg) => MakeArgDelegate(d => d.ToAsciiString()),
                 (DataFormat.Hex, DataSource.Arg) => MakeArgDelegate(d => d.ToHexString()),
@@ -82,7 +87,8 @@ namespace CipherTool.Parse
                 (DataFormat.Hex, DataSource.File) => MakeFileDelegate(d => File.WriteAllText(Arg, d.ToHexString())),
                 (DataFormat.Base64, DataSource.File) => MakeFileDelegate(d => File.WriteAllText(Arg, d.ToBase64String())),
                 _ => throw new NotValidArgCombinationException(),
-            };
+            });
         }
+
     }
 }

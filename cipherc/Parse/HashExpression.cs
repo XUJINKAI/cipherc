@@ -6,32 +6,28 @@ using CipherTool.Cipher;
 
 namespace CipherTool.Parse
 {
-    public class HashExpression<T> : ExpressionBase, IExpression
+    public class HashExpression<T> : BaseExpression, IExpression
         where T : IHash
     {
         private IHash HashObj { get; set; }
 
-        public DataExpression? HashData { get; set; }
+        public IExpression? HashData { get; set; }
 
         public HashExpression()
         {
             HashObj = Activator.CreateInstance<T>();
         }
 
-        public override bool IsDataType => true;
-
-        protected override void SelfParse(TokenStream tokenStream)
+        protected override void SelfParse(Parser parser)
         {
-            Contract.Assume(tokenStream != null);
-            HashData = tokenStream.PopExpression<DataExpression>(this);
+            Contract.Assume(parser != null);
+            HashData = parser.PopExpression();
         }
-        protected override Data? SelfEval()
+        protected override Data SelfEval()
         {
             Contract.Assume(HashData != null);
             var data = HashData.Eval();
-
-            Contract.Assume(data != null);
-            return HashObj.DoHash(data.Value);
+            return HashObj.DoHash(data);
         }
     }
 }

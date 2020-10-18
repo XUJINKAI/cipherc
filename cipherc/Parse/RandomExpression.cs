@@ -7,19 +7,17 @@ using System.Text;
 
 namespace CipherTool.Parse
 {
-    public class RandomExpression : ExpressionBase, IExpression
+    public class RandomExpression : BaseExpression, IExpression
     {
-        public override bool IsDataType => true;
-
         public int Bits { get; private set; }
 
-        protected override void SelfParse(TokenStream tokenStream)
+        protected override void SelfParse(Parser parser)
         {
-            Contract.Assume(tokenStream != null);
-            var token = tokenStream.PopToken();
-            Bits = int.Parse(token.Raw);
+            Contract.Assume(parser != null);
+            var s = parser.PopString();
+            Bits = int.Parse(s);
         }
-        protected override Data? SelfEval()
+        protected override Data SelfEval()
         {
             return Cipher.Random.RandomBytes(Bits);
         }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CipherTool.Parse
 {
-    class DecExpression
+    class EncOperator
     {
     }
 }

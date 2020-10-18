@@ -8,33 +8,32 @@ using CipherTool.Exceptions;
 
 namespace CipherTool.Parse
 {
-    public class DataExpression : ExpressionBase, IExpression
+    public class DataExpression : BaseExpression, IExpression
     {
         public DataSource? Source { get; private set; }
         public DataFormat? Format { get; private set; }
         public string? Arg { get; private set; }
 
-        public override bool IsDataType => true;
-
-        protected override void SelfParse(TokenStream tokenStream)
+        protected override void SelfParse(Parser parser)
         {
-            Contract.Assume(tokenStream != null);
+            Contract.Assert(parser != null);
 
-            Token token1 = tokenStream.PopToken();
-            Token token2 = tokenStream.PopToken();
-            if (token1.EnumValue is DataSource s1 && token2.EnumValue is DataFormat f1)
+            var enum1 = parser.PopEnum(out var token1);
+            var enum2 = parser.PopEnum(out var token2);
+
+            if (enum1 is DataSource s1 && enum2 is DataFormat f1)
             {
                 Source = s1;
                 Format = f1;
             }
-            else if (token1.EnumValue is DataFormat f2 && token2.EnumValue is DataSource s2)
+            else if (enum1 is DataFormat f2 && enum2 is DataSource s2)
             {
                 Source = s2;
                 Format = f2;
             }
             else
             {
-                if (token1.EnumValue is DataSource || token1.EnumValue is DataFormat)
+                if (enum1 is DataSource || enum1 is DataFormat)
                 {
                     throw new UnexpectedTokenException(token2);
                 }
@@ -44,22 +43,17 @@ namespace CipherTool.Parse
                 }
             }
 
-            string arg;
-
             if (Source == DataSource.Pipe)
             {
-                arg = Helper.GetPipeAllTextIn() ?? throw new NoPipeInputException();
+                Arg = Helper.GetPipeAllTextIn() ?? throw new NoPipeInputException();
             }
             else
             {
-                var token3 = tokenStream.PopToken();
-                arg = token3.Raw;
+                Arg = parser.PopString();
             }
-
-            Arg = arg;
         }
 
-        protected override Data? SelfEval()
+        protected override Data SelfEval()
         {
             if (Source == DataSource.File && !File.Exists(Arg))
             {
