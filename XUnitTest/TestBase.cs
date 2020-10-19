@@ -18,7 +18,7 @@ namespace CipherTool.Test
 
         public string ENDLINE { get; } = "\n";
 
-        protected void TestOutput(string arg, Action<string, string> AssertFunc)
+        protected void TestOutput(string arg, Action<string[], string> AssertFunc)
         {
             TestOutputHelper.WriteLine("Running command...");
             TestOutputHelper.WriteLine(arg);
@@ -26,14 +26,12 @@ namespace CipherTool.Test
 
             var outputStream = new MemoryStream();
             var errorStream = new MemoryStream();
-            var outputWriter = new StreamWriter(outputStream) { AutoFlush = true };
-            var errorWriter = new StreamWriter(errorStream) { AutoFlush = true };
-            Log.OutputStream = outputWriter;
-            Log.ErrorStream = errorWriter;
-            Log.EndOfLine = ENDLINE;
 
             var parseSetting = new ParseSetting()
             {
+                EndOfLine = ENDLINE,
+                OutputStream = new StreamWriter(outputStream) { AutoFlush = true },
+                ErrorStream = new StreamWriter(errorStream) { AutoFlush = true },
             };
             var args = NativeMethods.CommandLineToArgs(arg);
 
@@ -50,7 +48,7 @@ namespace CipherTool.Test
             TestOutputHelper.WriteLine("Error:");
             TestOutputHelper.WriteLine(error);
 
-            AssertFunc.Invoke(output, error);
+            AssertFunc.Invoke(output.Split(ENDLINE, StringSplitOptions.None), error);
         }
     }
 }

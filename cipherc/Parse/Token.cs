@@ -40,5 +40,7 @@ namespace CipherTool.Parse
             Raw = arg;
             Pos = position;
         }
+
+        public override string ToString() => $"<Token '{Raw}', index {Pos}>";
     }
 }

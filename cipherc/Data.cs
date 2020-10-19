@@ -9,7 +9,7 @@ namespace CipherTool
     /// </summary>
     public struct Data : IEquatable<Data>, IEquatable<byte[]>
     {
-        public byte[] Bytes;
+        private byte[] Bytes;
 
         public int Length => Bytes.Length;
 
@@ -32,7 +32,6 @@ namespace CipherTool
         public string ToHexString(string sep = "") => Bytes.ToHexString(sep);
         public void SaveToFile(string path)
         {
-            Log.Trace($"保存文件到 {path}");
             File.WriteAllBytes(path, Bytes);
         }
 
@@ -97,5 +96,6 @@ namespace CipherTool
                 bytes[i / 2] = Convert.ToByte(hexStr.Substring(i, 2), 16);
             return bytes;
         }
+
     }
 }

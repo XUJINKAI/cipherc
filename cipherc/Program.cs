@@ -34,6 +34,9 @@ namespace CipherTool
 
         static void RunCmdArgs(string[] args, ParseSetting parseSetting)
         {
+#if DEBUG
+            Parser.Eval(args, parseSetting);
+#else
             try
             {
                 Parser.Eval(args, parseSetting);
@@ -42,6 +45,7 @@ namespace CipherTool
             {
                 Console.WriteLine(ex.Message);
             }
+#endif
         }
 
         static void ShowHelp()

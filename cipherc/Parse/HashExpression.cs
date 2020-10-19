@@ -23,10 +23,10 @@ namespace CipherTool.Parse
             Contract.Assume(parser != null);
             HashData = parser.PopExpression();
         }
-        protected override Data SelfEval()
+        protected override Data SelfEval(Parser parser)
         {
             Contract.Assume(HashData != null);
-            var data = HashData.Eval();
+            var data = HashData.Eval(parser);
             return HashObj.DoHash(data);
         }
     }

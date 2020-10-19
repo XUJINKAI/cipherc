@@ -17,7 +17,7 @@ namespace CipherTool.Parse
             var s = parser.PopString();
             Bits = int.Parse(s);
         }
-        protected override Data SelfEval()
+        protected override Data SelfEval(Parser parser)
         {
             return Cipher.Random.RandomBytes(Bits);
         }

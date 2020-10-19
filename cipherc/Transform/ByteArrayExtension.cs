@@ -25,7 +25,7 @@ namespace CipherTool.Transform
             {
                 if (b >> 7 == 1)
                 {
-                    Log.Warn("Input Bytes is Not all ASCII char, convert back would be wrong.");
+                    Console.Error.WriteLine("Input Bytes is Not all ASCII char, convert back would be wrong.");
                     break;
                 }
             }

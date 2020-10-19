@@ -22,7 +22,11 @@ namespace CipherTool.Cipher
         public Data Key { get; set; }
         public Data Pk { get; set; }
 
-        public Data Enc(Data data) => throw new NotImplementedException();
+        public Data Enc(Data data)
+        {
+            throw new NotImplementedException();
+        }
+
         public Data Dec(Data data) => throw new NotImplementedException();
         public Data Sign(Data data) => throw new NotImplementedException();
         public bool SignCheck(Data data) => throw new NotImplementedException();

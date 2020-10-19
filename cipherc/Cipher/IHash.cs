@@ -10,7 +10,7 @@ namespace CipherTool.Cipher
         public static Data MessageDigest<T>(Data data) where T : GeneralDigest
         {
             var digest = Activator.CreateInstance<T>();
-            digest.BlockUpdate(data.Bytes, 0, data.Length);
+            digest.BlockUpdate(data, 0, data.Length);
             var output = new byte[digest.GetDigestSize()];
             digest.DoFinal(output, 0);
             return output;

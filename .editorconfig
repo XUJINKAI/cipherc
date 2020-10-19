@@ -11,3 +11,6 @@ dotnet_diagnostic.CA1805.severity = suggestion
 
 # CA1031: 不捕获常规异常类型
 dotnet_diagnostic.CA1031.severity = suggestion
+
+# CA1032: 实现标准异常构造函数
+dotnet_diagnostic.CA1032.severity = suggestion

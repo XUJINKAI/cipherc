@@ -10,6 +10,6 @@ namespace CipherTool.Parse
 
         bool HasValue { get; }
 
-        Data? Eval();
+        Data? Eval(Parser parser);
     }
 }

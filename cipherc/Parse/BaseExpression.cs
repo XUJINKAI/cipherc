@@ -38,27 +38,27 @@ namespace CipherTool.Parse
             }
         }
 
-        public void Execute()
+        public void Execute(Parser parser)
         {
-            Eval();
+            Eval(parser);
         }
 
-        public Data Eval()
+        public Data Eval(Parser parser)
         {
             if (EvalCache.HasValue)
             {
                 return EvalCache.Value;
             }
-            EvalCache = SelfEval();
+            EvalCache = SelfEval(parser);
 
             foreach (var sub in Postfixes)
             {
-                sub.Eval(this);
+                sub.Eval(parser, this);
             }
             return EvalCache.Value;
         }
 
         protected abstract void SelfParse(Parser parser);
-        protected abstract Data SelfEval();
+        protected abstract Data SelfEval(Parser parser);
     }
 }

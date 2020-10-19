@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Text;
 using CipherTool.Parse;
 
@@ -10,7 +11,9 @@ namespace CipherTool.Exceptions
         public Token Token { get; private set; }
 
         public UnexpectedTokenException(Token token)
+            : base($"Unexpected token: {token}")
         {
+            Contract.Assume(token != null);
             Token = token;
         }
 

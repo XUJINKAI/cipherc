@@ -8,6 +8,6 @@ namespace CipherTool.Parse
     {
         void ContinueParseWholeSentence(Parser parser);
 
-        void Execute();
+        void Execute(Parser parser);
     }
 }

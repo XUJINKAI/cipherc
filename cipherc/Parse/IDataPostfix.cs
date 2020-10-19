@@ -8,6 +8,6 @@ namespace CipherTool.Parse
     {
         void ContinueParse(Parser parser);
 
-        void Eval(IExpression parent);
+        void Eval(Parser parser, IExpression parent);
     }
 }

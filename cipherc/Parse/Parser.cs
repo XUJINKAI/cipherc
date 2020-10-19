@@ -38,7 +38,7 @@ namespace CipherTool.Parse
             s0.ContinueParseWholeSentence(this);
             Sentences.Add(s0);
 
-            while (TokenStream.TryMoveNext())
+            while (TokenStream.HasNextToken())
             {
                 PopType<ISpliter>();
                 var s = PopInstance<ISentenceRoot>();
@@ -47,7 +47,7 @@ namespace CipherTool.Parse
             }
         }
 
-        public void Evaluate() => Sentences.ForEach(s => s.Execute());
+        public void Evaluate() => Sentences.ForEach(s => s.Execute(this));
 
         public static Parser Eval(string[] args, ParseSetting? setting = null)
         {
@@ -63,22 +63,30 @@ namespace CipherTool.Parse
         public IDictionary<string, object> KeyTokenMap { get; } = new Dictionary<string, object>()
         {
             {"then", typeof(ISpliter) },
+            {"and", "then" },
+
             {"from", typeof(DataExpression) },
             {"to", typeof(DataTransformPostfix) },
+
             {"rand", typeof(RandomExpression) },
             {"random", "rand" },
+
             {"sm3", typeof(HashExpression<SM3Hash>) },
             {"md5", typeof(HashExpression<MD5Hash>) },
             {"sha1", typeof(HashExpression<SHA1Hash>) },
             {"sha256", typeof(HashExpression<SHA256Hash>) },
-            {"sm2", typeof(AsymObject) },
+
+            {"sm2", typeof(AsymObject<SM2Asym>) },
             {"sm4", typeof(SymObject) },
+            {"x509", typeof(X509Object) },
+
             {"get", typeof(GetOperator) },
             {"set", typeof(SetOperator) },
             {"enc", typeof(EncOperator) },
             {"dec", typeof(DecOperator) },
             {"sign", typeof(SignOperator) },
             {"check", typeof(SignCheckOperator) },
+
             {"plain", DataFormat.Plain },
             {"txt", "plain" },
             {"text", "plain" },
@@ -86,12 +94,14 @@ namespace CipherTool.Parse
             {"base64", DataFormat.Base64 },
             {"bin", DataFormat.Bin },
             {"pem", DataFormat.Pem },
+
             {"arg", DataSource.Arg },
             {"data", DataSource.Arg },
             {"file", DataSource.File },
             {"path", DataSource.File },
             {"pipe", DataSource.Pipe },
             {"stdin", DataSource.Pipe },
+
             {"ecb", CipherMode.Ecb },
             {"cbc", CipherMode.Cbc },
             {"gcm", CipherMode.Gcm },

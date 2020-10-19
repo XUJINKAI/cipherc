@@ -61,18 +61,19 @@ namespace CipherTool.Parse
             }
         }
 
-        public void Eval(IExpression parent)
+        public void Eval(Parser parser, IExpression parent)
         {
+            Contract.Assume(parser != null);
             Contract.Assume(parent != null);
             Data? MakeArgDelegate(Func<Data, string> func)
             {
-                var data = parent.Eval();
-                Log.OutputDataLine(func(data));
+                var data = parent.Eval(parser);
+                parser.Setting.OutputDataLine(func(data));
                 return data;
             }
             Data? MakeFileDelegate(Action<Data> func)
             {
-                var data = parent.Eval();
+                var data = parent.Eval(parser);
                 func(data);
                 return null;
             }

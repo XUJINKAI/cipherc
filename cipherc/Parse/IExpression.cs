@@ -8,16 +8,10 @@ namespace CipherTool.Parse
 {
     public interface IExpression : IUnit, ISentenceRoot
     {
-        Data Eval();
-
         IList<IDataPostfix> Postfixes { get; }
 
         void ContinueParseExpression(Parser parser, bool allowPostfixes);
 
-        public static IDataPostfix GetDefaultDataPostfix()
-        {
-            return new DataTransformPostfix();
-        }
+        Data Eval(Parser parser);
     }
-
 }

@@ -53,7 +53,7 @@ namespace CipherTool.Parse
             }
         }
 
-        protected override Data SelfEval()
+        protected override Data SelfEval(Parser parser)
         {
             if (Source == DataSource.File && !File.Exists(Arg))
             {
