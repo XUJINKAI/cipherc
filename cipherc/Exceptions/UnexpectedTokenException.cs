@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
-using CipherTool.Parse;
+using CipherTool.Tokenizer;
 
 namespace CipherTool.Exceptions
 {

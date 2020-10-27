@@ -1,8 +1,7 @@
 {
   "profiles": {
     "cipherc": {
-      "commandName": "Project",
-      "commandLineArgs": "shell"
+      "commandName": "Project"
     }
   }
 }

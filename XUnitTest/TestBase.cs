@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using CipherTool.Interpret;
 using CipherTool.Parse;
 using Xunit.Abstractions;
 
@@ -27,7 +28,7 @@ namespace CipherTool.Test
             var outputStream = new MemoryStream();
             var errorStream = new MemoryStream();
 
-            var parseSetting = new ParseSetting()
+            var parseSetting = new Setting()
             {
                 EndOfLine = ENDLINE,
                 OutputStream = new StreamWriter(outputStream) { AutoFlush = true },

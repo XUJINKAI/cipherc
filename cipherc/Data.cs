@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CipherTool.Transform;
+using Org.BouncyCastle.Crypto.Generators;
 
 namespace CipherTool
 {
@@ -10,6 +11,8 @@ namespace CipherTool
     public struct Data : IEquatable<Data>, IEquatable<byte[]>
     {
         private byte[] Bytes;
+
+        public byte[] GetBytes() => Bytes.DeepCopy() ?? throw new Exception();
 
         public int Length => Bytes.Length;
 
@@ -77,6 +80,16 @@ namespace CipherTool
         public override int GetHashCode()
         {
             return this.Bytes.GetHashCode();
+        }
+
+        public Data Repeat(int times)
+        {
+            var copy = new byte[Bytes.Length * times];
+            for (int i = 0; i < times; i++)
+            {
+                Buffer.BlockCopy(Bytes, 0, copy, i * Bytes.Length, Bytes.Length);
+            }
+            return copy;
         }
 
         /// <summary>

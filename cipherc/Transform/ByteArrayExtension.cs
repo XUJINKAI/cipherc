@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Text;
 
 namespace CipherTool.Transform
@@ -13,6 +15,22 @@ namespace CipherTool.Transform
             return copy;
         }
 
+        public static bool IsPrintable(this char ch)
+        {
+            return ch >= 32 && ch <= 126;
+        }
+
+        public static bool IsPrintable(this byte b)
+        {
+            return b >= 32 && b <= 126;
+        }
+
+        public static bool IsPrintable(this byte[] array)
+        {
+            if (array == null) throw new ArgumentNullException(nameof(array));
+            return array.All(b => b.IsPrintable());
+        }
+
         /// <summary>
         /// 注意：并非所有Byte都是可读字符。此转换仅用于查看，再转回去不一定是原文。
         /// </summary>
@@ -20,15 +38,7 @@ namespace CipherTool.Transform
         public static string ToAsciiString(this byte[] array)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
-
-            foreach (var b in array)
-            {
-                if (b >> 7 == 1)
-                {
-                    Console.Error.WriteLine("Input Bytes is Not all ASCII char, convert back would be wrong.");
-                    break;
-                }
-            }
+            if (!array.IsPrintable()) Console.Error.WriteLine("[WARN] Not all bytes are printable.");
             return Encoding.ASCII.GetString(array);
         }
 

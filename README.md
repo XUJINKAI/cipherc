@@ -46,38 +46,67 @@ cipherc sm3 \
         get pk to out
 ```
 
-## Import data `from`
+## Grammar
 
-```bash
-cipherc from <FORMAT> <SOURCE> [<ARG>]
+```c
+Block -> Sentence { then Sentence }
+Sentence -> Expression | Statement | Declaration
+
+// Expression
+
+Expression -> DataExpression
+
+DataExpression -> DataTerm { concat DataTerm }      // plus
+
+DataTerm -> DataFactor { times <N> }                // multiply
+
+DataFactor -> PostfixData
+// 先计算前缀，再计算后缀
+PostfixData -> PrefixData { DataOperator | print PrintFormat }
+
+PrefixData ->  { DataOperator } DataPrimary
+
+DataPrimary ->
+          InputSource <input>               // file <Path> | var <VAR> | rand <N-bytes>
+        | pipe                              // txt <pipeInputString>
+
+DataOperator ->
+        | encode EncodeFormat
+        | decode DecodeFormat
+        | HashOperator
+        | sub <Nstart> <Nlength>
+
+InputSource  -> txt | hex | base64 | file | var | rand
+PrintFormat  -> txt | hex | base64
+EncodeFormat -> txt | hex | base64 | url
+DecodeFormat -> txt | hex | base64 | url | pem
+HashOperator -> sm3 | md5 | sha1 | sha256
+
+// Statement
+
+Statement ->
+          ObjectSentence
+        | print PrintFormat DataExpression
+
+ObjectSentence ->
+        | Object get <KEY>
+        | Object set <KEY> Data
+        | Object ObjectAction <PARAM> Data
+
+Asym -> sm2 | rsa1024
+Sym  -> sm4 | aes
+Pack -> x509 | p10
+Object -> Asym | Sym | Pack
+ObjectAction -> enc | dec | sign | check
+
+// Declaration
+
+Declaration -> Assignment | FuncDeclaration
+
+Assignment ->
+          var <ID> is DataExpression
+        | obj <ID> is Object
+
+FuncDeclaration -> ε
+
 ```
-
-`<FORMAT>`: txt, hex, base64, bin, pem
-
-`<SOURCE>`: arg|data, file|path, pipe|stdin
-
-## Generate random data `rand`
-
-```bash
-cipherc rand <N> bit
-```
-
-## Transform format `to`
-
-```bash
-cipherc <DATA> to <FORMAT> <SOURCE> [<ARG>]
-```
-
-## Pipe support
-
-```bash
-echo from base64 txt YWJjZA== | cipherc
-```
-
-## `Sentence`
-
-cipherc sm2 gen sign from hex 010203
-
-cipherc sm2 load key from hex 010203 get pk to hex
-
-cipherc sm4-gcm

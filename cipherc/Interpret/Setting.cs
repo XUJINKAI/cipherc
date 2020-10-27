@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 
-namespace CipherTool.Parse
+namespace CipherTool.Interpret
 {
     public enum LogLevel : int
     {
@@ -17,7 +15,7 @@ namespace CipherTool.Parse
         Trace = 12,
     }
 
-    public class ParseSetting
+    public class Setting
     {
         public string EndOfLine { get; set; } = Environment.NewLine;
         public TextWriter OutputStream { get; set; } = Console.Out;
