@@ -11,7 +11,7 @@ namespace CipherTool.Tokenizer
 
         SentenceEnd,
 
-        Txt,
+        [TokenType("ascii")] Txt,
         Hex,
         Base64,
         Url,
@@ -27,6 +27,10 @@ namespace CipherTool.Tokenizer
         Encode,
         Decode,
         Sub,
+        Print,
+
+        [TokenType("times")] RepeatData,
+        [TokenType("concat")] ConcatData,
 
         Var,
         Obj,
@@ -34,6 +38,14 @@ namespace CipherTool.Tokenizer
 
     public static class TokenTypeExtension
     {
-
+        public static T? CastToEnum<T>(this TokenType tokenType) where T : struct, Enum
+        {
+            int i = (int)tokenType;
+            if (Enum.IsDefined(typeof(T), i))
+            {
+                return Enum.Parse<T>(i.ToString());
+            }
+            return null;
+        }
     }
 }

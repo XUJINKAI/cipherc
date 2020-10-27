@@ -69,6 +69,12 @@ namespace CipherTool.Tokenizer
             }
         }
 
+        public static T? ToEnum<T>(this Token token) where T : struct, Enum
+        {
+            var type = token.GetTokenType();
+            return type.CastToEnum<T>();
+        }
+
         public static bool IsMatch(this Token token, TokenType keyword)
         {
             return token.GetTokenType() == keyword;

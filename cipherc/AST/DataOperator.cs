@@ -6,42 +6,61 @@ using CipherTool.Tokenizer;
 
 namespace CipherTool.AST
 {
-    public enum HashAlgr : int
+    public abstract class DataOperator : Node
     {
-        Sm3 = TokenType.Sm3,
-        Md5 = TokenType.Md5,
-        Sha1 = TokenType.Sha1,
-        Sha256 = TokenType.Sha256,
+
+    }
+
+    public class PrintOperator : DataOperator
+    {
+        public PrintFormat PrintFormat { get; }
+
+        public PrintOperator(PrintFormat format)
+        {
+            PrintFormat = format;
+        }
     }
 
     public class HashOperator : DataOperator
     {
         public HashAlgr HashAlgr { get; set; }
+
+        public HashOperator(HashAlgr algr)
+        {
+            HashAlgr = algr;
+        }
     }
 
     public class EncodeOperator : DataOperator
     {
         public EncodeFormat EncodeFormat { get; set; }
+
+        public EncodeOperator(EncodeFormat format)
+        {
+            EncodeFormat = format;
+        }
     }
 
     public class DecodeOperator : DataOperator
     {
         public DecodeFormat DecodeFormat { get; set; }
-    }
 
-    public abstract class DataOperator : Node
-    {
-        public DataPrimary DataPrimary { get; set; }
-
-        public override void Accept(IVisitor visitor)
+        public DecodeOperator(DecodeFormat format)
         {
-            Contract.Assume(visitor != null);
-            visitor.Visit(this);
+            DecodeFormat = format;
         }
     }
+
     public class SubOperator : DataOperator
     {
         public int Start { get; set; }
+
         public int Length { get; set; }
+
+        public SubOperator(int start, int length)
+        {
+            Start = start;
+            Length = length;
+        }
     }
 }

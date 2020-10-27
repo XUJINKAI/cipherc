@@ -5,7 +5,7 @@ using CipherTool.Tokenizer;
 
 namespace CipherTool.AST
 {
-    public enum InputSource : int
+    public enum DataSource : int
     {
         Txt = TokenType.Txt,
         Hex = TokenType.Hex,
@@ -13,26 +13,37 @@ namespace CipherTool.AST
         File = TokenType.File,
         Var = TokenType.Var,
         Rand = TokenType.Rand,
+        Pipe = TokenType.Pipe,
     }
+
     public enum PrintFormat : int
     {
         Txt = TokenType.Txt,
         Hex = TokenType.Hex,
         Base64 = TokenType.Base64,
     }
+
     public enum EncodeFormat : int
     {
-        Txt = TokenType.Txt,
         Hex = TokenType.Hex,
         Base64 = TokenType.Base64,
         Url = TokenType.Url,
     }
+
     public enum DecodeFormat : int
     {
-        Txt = TokenType.Txt,
         Hex = TokenType.Hex,
         Base64 = TokenType.Base64,
         Url = TokenType.Url,
         Pem = TokenType.Pem,
     }
+
+    public enum HashAlgr : int
+    {
+        Sm3 = TokenType.Sm3,
+        Md5 = TokenType.Md5,
+        Sha1 = TokenType.Sha1,
+        Sha256 = TokenType.Sha256,
+    }
+
 }

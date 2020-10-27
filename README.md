@@ -1,22 +1,18 @@
-﻿# cipherc
+﻿# cipherc [WIP]
 
-A cross platform app to transform data fromat or do cryptographic operation.
-
-**WIP: not all designs are available now, see Unit Tests for demos.**
+An english-like bytes data process/cipher DSL.
 
 e.g.
 
 ```bash
 # transform data format
-cipherc from hex data 61626364 to base64 data
+cipherc hex 61626364 print base64
 
 # hash data
-cipherc sm3 from txt data "to be hash"
+cipherc sm3 txt "to be hash" print hex
 
-# output random 32bit data to hex format and bin file
-cipherc rand 32 bit \
-    to hex data \
-    to bin file "rand.bin"
+# output random 32bit
+cipherc rand 32 print hex
 
 # generate sm2 key pair then sign data
 cipherc sm2 gen \
@@ -67,14 +63,14 @@ PostfixData -> PrefixData { DataOperator | print PrintFormat }
 PrefixData ->  { DataOperator } DataPrimary
 
 DataPrimary ->
-          InputSource <input>               // file <Path> | var <VAR> | rand <N-bytes>
+          DataSource <input>                // file <Path> | var <VAR> | rand <N-bytes>
         | pipe                              // txt <pipeInputString>
 
 DataOperator ->
         | encode EncodeFormat
         | decode DecodeFormat
-        | HashOperator
         | sub <Nstart> <Nlength>
+        | HashOperator
 
 InputSource  -> txt | hex | base64 | file | var | rand
 PrintFormat  -> txt | hex | base64

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CipherTool.Transform;
-using Org.BouncyCastle.Crypto.Generators;
 
 namespace CipherTool
 {
@@ -80,6 +79,16 @@ namespace CipherTool
         public override int GetHashCode()
         {
             return this.Bytes.GetHashCode();
+        }
+
+        public Data Sub(int start, int length)
+        {
+            return Bytes.SubArray(start, length);
+        }
+
+        public Data Concat(Data data)
+        {
+            return Bytes.Concat(data.Bytes);
         }
 
         public Data Repeat(int times)

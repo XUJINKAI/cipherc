@@ -1,55 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using CipherTool.Interpret;
-using CipherTool.Parse;
+using CipherTool.Transform;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace CipherTool.Test
 {
     public class TestBase
     {
-        private readonly ITestOutputHelper TestOutputHelper;
+        private readonly ITestOutputHelper _testOutputHelper;
 
         public TestBase(ITestOutputHelper output)
         {
-            TestOutputHelper = output;
+            _testOutputHelper = output;
         }
 
-        public string ENDLINE { get; } = "\n";
+        public string Endline { get; } = "\n";
 
         protected void TestOutput(string arg, Action<string[], string> AssertFunc)
         {
-            TestOutputHelper.WriteLine("Running command...");
-            TestOutputHelper.WriteLine(arg);
-            TestOutputHelper.WriteLine("");
+            _testOutputHelper.WriteLine("Running command...");
+            _testOutputHelper.WriteLine(arg);
+            _testOutputHelper.WriteLine("");
 
             var outputStream = new MemoryStream();
             var errorStream = new MemoryStream();
 
-            var parseSetting = new Setting()
+            var setting = new Setting()
             {
-                EndOfLine = ENDLINE,
+                EndOfLine = Endline,
                 OutputStream = new StreamWriter(outputStream) { AutoFlush = true },
                 ErrorStream = new StreamWriter(errorStream) { AutoFlush = true },
             };
             var args = NativeMethods.CommandLineToArgs(arg);
 
-            Parser.Eval(args, parseSetting);
+            var inter = new Interpreter(setting);
+            inter.Interpret(args);
 
             outputStream.Position = 0;
             errorStream.Position = 0;
             var output = new StreamReader(outputStream).ReadToEnd();
             var error = new StreamReader(errorStream).ReadToEnd();
 
-            TestOutputHelper.WriteLine("Output:");
-            TestOutputHelper.WriteLine(output);
+            _testOutputHelper.WriteLine("Output:");
+            _testOutputHelper.WriteLine(output);
 
-            TestOutputHelper.WriteLine("Error:");
-            TestOutputHelper.WriteLine(error);
+            _testOutputHelper.WriteLine("Error:");
+            _testOutputHelper.WriteLine(error);
 
-            AssertFunc.Invoke(output.Split(ENDLINE, StringSplitOptions.None), error);
+            var lines = output.Split(Endline);
+            AssertFunc.Invoke(lines, error);
         }
     }
 }

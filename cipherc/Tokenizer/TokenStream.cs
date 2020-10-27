@@ -11,34 +11,34 @@ namespace CipherTool.Tokenizer
 {
     public class TokenStream
     {
-        private readonly IList<Token> Tokens;
+        private int _index;
+        private readonly IList<Token> _tokens;
 
-        private int Index { get; set; }
-
-        public void Reset() => Index = -1;
-
-        private bool IsValidIndex(int index) => index >= 0 && index < Tokens.Count;
+        public void Reset() => _index = -1;
+        private bool IsValidIndex(int index) => index >= 0 && index < _tokens.Count;
 
         public TokenStream(string[] args)
         {
             Contract.Assert(args != null);
-            Tokens = new List<Token>();
+            _tokens = new List<Token>();
             int idx = 0;
             foreach (var arg in args)
             {
                 idx++;
-                Tokens.Add(new Token(arg, idx));
+                _tokens.Add(new Token(arg, idx));
             }
             Reset();
         }
 
-        public Token Pop()
+        // Read()
+
+        public Token Read()
         {
-            var idx = Index + 1;
+            var idx = _index + 1;
             if (IsValidIndex(idx))
             {
-                Index += 1;
-                return Tokens[idx];
+                _index += 1;
+                return _tokens[idx];
             }
             else
             {
@@ -46,79 +46,83 @@ namespace CipherTool.Tokenizer
             }
         }
 
-        public bool TryPop([MaybeNullWhen(false)] out Token result)
+        public T ReadEnum<T>() where T : struct, Enum
         {
-            var idx = Index + 1;
+            var token = Read();
+            var t = token.ToEnum<T>();
+            if (t.HasValue)
+            {
+                return t.Value;
+            }
+            throw new UnexpectedTokenException(token);
+        }
+
+        public int ReadInt()
+        {
+            var token = Read();
+            if (int.TryParse(token.Text, out var result))
+            {
+                return result;
+            }
+            throw new UnexpectedTokenException(token, "expect int value here");
+        }
+
+        public string ReadText()
+        {
+            var token = Read();
+            return token.Text;
+        }
+
+        // PeekType
+
+        public Token? Peek(int offset = 1)
+        {
+            var idx = _index + offset;
             if (IsValidIndex(idx))
             {
-                Index += 1;
-                result = Tokens[idx];
-                return true;
+                return _tokens[idx];
             }
             else
             {
-                result = null;
-                return false;
+                return null;
             }
         }
 
-
-        public Token Peek(int offset = 1)
-        {
-            var idx = Index + offset;
-            if (IsValidIndex(idx))
-            {
-                return Tokens[idx];
-            }
-            else
-            {
-                throw new ExpectedMoreTokenException();
-            }
-        }
-
-        public bool TryPeek([MaybeNullWhen(false)] out Token result, int offset = 1)
-        {
-            var idx = Index + offset;
-            if (IsValidIndex(idx))
-            {
-                result = Tokens[idx];
-                return true;
-            }
-            else
-            {
-                result = null;
-                return false;
-            }
-        }
-
-        public bool Peek(params TokenType[] Keywords)
+        public bool PeekType(params TokenType[] keywords)
         {
             var token = Peek();
-            return Keywords.Any(x => token.IsMatch(x));
+            return token != null && keywords.Any(x => token.IsMatch(x));
+        }
+
+        public bool PeekType<T>() where T : struct, Enum
+        {
+            var token = Peek();
+            return token?.ToEnum<T>() != null;
+        }
+
+        // Accept
+
+        public bool Accept(TokenType type)
+        {
+            if (PeekType(type))
+            {
+                var token = Read();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public bool Expect(TokenType keyword)
         {
-            Token token = Pop();
+            Token token = Read();
             if (token.IsMatch(keyword))
                 return true;
             else
                 throw new UnexpectedTokenException(token, $"Expected token: {keyword}, got {token.Text}");
         }
-
-        public bool Accept(TokenType keyword)
-        {
-            if (Peek(keyword))
-            {
-                var token = Pop();
-                return token.IsMatch(keyword);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
 
     }
 }

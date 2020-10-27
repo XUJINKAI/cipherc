@@ -3,70 +3,77 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using CipherTool.Exceptions;
+using CipherTool.Interpret;
 
 namespace CipherTool.AST
 {
-    public class Expression : Node
+    public abstract class DataNode : Node
     {
-        public Node DataExpression { get; set; }
+
     }
 
     /// <summary>
-    /// DataExpression -> DataTerm { concat DataTerm }
+    /// DataConcator -> DataRepeator { concat DataRepeator }
     /// </summary>
-    public class DataExpression : Node
+    public class DataConcator : DataNode
     {
-        public IList<Node> DataTerms { get; } = new List<Node>();
-    }
+        public DataNode Left { get; }
+        public DataNode Right { get; }
 
-    /// <summary>
-    /// DataTerm -> DataFactor { times <N> }
-    /// </summary>
-    public class DataTerm : Node
-    {
-        public DataFactor DataFactor { get; set; }
-        public IList<int> Times { get; } = new List<int>();
-    }
-
-    public class DataFactor : Node
-    {
-        public PostfixData PostfixData { get; set; }
-    }
-
-    public class PostfixData : Node
-    {
-
-    }
-
-    public class PrefixData : Node
-    {
-        public DataPrimary DataPrimary { get; set; }
-
-        public IList<DataOperator> Prefixes { get; } = new List<DataOperator>();
-    }
-
-    /// <summary>
-    /// DataPrimary -> InputSourceDataPrimary | PipeSourceDataPrimary
-    /// </summary>
-    public abstract class DataPrimary : Node
-    {
-    }
-
-    public class InputSourceDataPrimary : DataPrimary
-    {
-        public InputSource InputSource { get; set; }
-
-        public string InputString { get; set; }
-
-        public InputSourceDataPrimary(InputSource source, string input)
+        public DataConcator(DataNode left, DataNode right)
         {
-            InputSource = source;
-            InputString = input;
+            Left = left;
+            Right = right;
         }
     }
 
-    public class PipeSourceDataPrimary : DataPrimary
+    /// <summary>
+    /// DataRepeator -> DataFactor { times <N> }
+    /// </summary>
+    public class DataRepeator : DataNode
     {
+        public DataNode DataFactor { get; set; }
 
+        public int RepeatTimes { get; }
+
+        public DataRepeator(DataNode node, int repeatTimes)
+        {
+            DataFactor = node;
+            RepeatTimes = repeatTimes;
+        }
+    }
+
+    /// <summary>
+    /// DataFactor -> PostfixData
+    /// PostfixData -> PrefixData { DataOperator | print PrintFormat }
+    /// PrefixData ->  { DataOperator } DataPrimary
+    /// </summary>
+    public class DataFactor : DataNode
+    {
+        public DataNode Data { get; }
+
+        public DataOperator Operator { get; }
+
+        public DataFactor(DataNode node, DataOperator op)
+        {
+            Data = node;
+            Operator = op;
+        }
+    }
+
+    /// <summary>
+    /// DataPrimary -> [ txt | hex | base64 | file | var | rand ] InputText | pipe
+    /// </summary>
+    public class DataPrimary : DataNode
+    {
+        public DataSource DataSource { get; set; }
+
+        public string InputText { get; set; }
+
+        public DataPrimary(DataSource source, string input)
+        {
+            DataSource = source;
+            InputText = input;
+        }
     }
 }

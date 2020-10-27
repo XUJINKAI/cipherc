@@ -7,5 +7,9 @@ namespace CipherTool.Interpret
         Setting Setting { get; }
 
         IDictionary<string, Data> Variables { get; }
+
+        void WriteOutputLine(string line);
+
+        void WriteErrorLine(string line);
     }
 }

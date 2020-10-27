@@ -10,6 +10,12 @@ namespace CipherTool.AST
     {
         public string VarName { get; set; }
 
-        public Node DataExpression { get; set; }
+        public DataNode Data { get; set; }
+
+        public Assignment(string name, DataNode data)
+        {
+            VarName = name;
+            Data = data;
+        }
     }
 }

@@ -6,16 +6,6 @@ namespace CipherTool.Exceptions
 {
     public class ExpectedMoreTokenException : GeneralException
     {
-        public ExpectedMoreTokenException(string message) : base(message)
-        {
-        }
-
-        public ExpectedMoreTokenException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        public ExpectedMoreTokenException()
-        {
-        }
+        public override string Message { get; } = "Expect more tokens.";
     }
 }

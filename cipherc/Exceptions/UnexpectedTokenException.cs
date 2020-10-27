@@ -8,17 +8,22 @@ namespace CipherTool.Exceptions
 {
     public class UnexpectedTokenException : GeneralException
     {
+        private readonly string _message;
+
+        public override string Message => $"Unexpected token: {Token}{(string.IsNullOrEmpty(_message) ? "" : $", {_message}")}";
+
         public Token Token { get; private set; }
 
         public UnexpectedTokenException(Token token)
-            : base($"Unexpected token: {token}")
         {
             Contract.Assume(token != null);
+            _message = "";
             Token = token;
         }
 
-        public UnexpectedTokenException(Token token, string message) : base(message)
+        public UnexpectedTokenException(Token token, string message)
         {
+            _message = message;
             Token = token;
         }
     }
