@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using CipherTool.Interpret;
-using Xunit;
 using Xunit.Abstractions;
+using Random = CipherTool.Cipher.Random;
 
 namespace CipherTool.Test
 {
+    public delegate void TestOutputDelegate(string[] output, string error);
+
     public class TestBase
     {
         private readonly ITestOutputHelper _testOutputHelper;
@@ -20,7 +19,26 @@ namespace CipherTool.Test
 
         public string Endline { get; } = "\n";
 
-        protected void TestOutput(string arg, Action<string[], string> AssertFunc)
+        protected Data GetRandom(int bytes = 128)
+        {
+            return Random.RandomBytes(bytes);
+        }
+
+        protected void AppendLine(string line)
+        {
+            _testOutputHelper.WriteLine(line);
+        }
+
+        protected void MockConsoleIn(string? text)
+        {
+#if DEBUG
+            Helper.MockConsoleInput(text);
+#else
+            throw new Exception($"MockConsoleIn function only work in Debug mode.");
+#endif
+        }
+
+        protected void TestOutput(string arg, TestOutputDelegate assertFunc)
         {
             _testOutputHelper.WriteLine("Running command...");
             _testOutputHelper.WriteLine(arg);
@@ -29,16 +47,15 @@ namespace CipherTool.Test
             var outputStream = new MemoryStream();
             var errorStream = new MemoryStream();
 
-            var setting = new Setting()
+            var context = new Context()
             {
                 EndOfLine = Endline,
                 OutputStream = new StreamWriter(outputStream) { AutoFlush = true },
                 ErrorStream = new StreamWriter(errorStream) { AutoFlush = true },
             };
-            var args = NativeMethods.CommandLineToArgs(arg);
 
-            var inter = new Interpreter(setting);
-            inter.Interpret(args);
+            var inter = new Interpreter(context);
+            inter.Interpret(arg);
 
             outputStream.Position = 0;
             errorStream.Position = 0;
@@ -52,7 +69,7 @@ namespace CipherTool.Test
             _testOutputHelper.WriteLine(error);
 
             var lines = output.Split(Endline);
-            AssertFunc.Invoke(lines, error);
+            assertFunc.Invoke(lines, error);
         }
     }
 }

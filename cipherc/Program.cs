@@ -15,8 +15,11 @@ namespace CipherTool
             {
                 Console.WriteLine(Environment.CommandLine);
             }
-            var setting = new Setting();
-            var interpreter = new Interpreter(setting);
+            var ctx = new Context()
+            {
+
+            };
+            var interpreter = new Interpreter(ctx);
             if (args.Length == 0)
             {
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)

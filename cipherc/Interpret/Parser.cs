@@ -8,18 +8,21 @@ namespace CipherTool.Interpret
 {
     public class Parser
     {
+        private IContext Context { get; }
+
         private TokenStream Tokens { get; }
 
-        public Parser(TokenStream tokenStream)
+        public Parser(IContext context, TokenStream tokenStream)
         {
             Contract.Assert(tokenStream != null);
+            Context = context;
             Tokens = tokenStream;
         }
 
         public Node BuildAst()
         {
             Tokens.Reset();
-            return DataExpression();
+            return Block();
         }
 
         private Node Block()
@@ -30,16 +33,20 @@ namespace CipherTool.Interpret
             {
                 block.AddNode(Sentence());
             }
-
             return block.Sentences.Count == 1 ? block.Sentences[0] : block;
         }
 
         private Node Sentence()
         {
-            return Expression();
+            var exp = Expression();
+            return exp switch
+            {
+                DataFactor factor when factor.Operator is PrintOperator => exp,
+                _ => new DataFactor(exp, Context.GetDefaultPrintOperator()),
+            };
         }
 
-        private Node Expression()
+        private DataNode Expression()
         {
             return DataExpression();
         }

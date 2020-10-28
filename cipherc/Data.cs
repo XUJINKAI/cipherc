@@ -101,6 +101,7 @@ namespace CipherTool
         public Data Sub(int start, int length) => _bytes.SubArray(start, length);
         public Data Concat(Data data) => _bytes.Concat(data._bytes);
         public Data Repeat(int times) => _bytes.Repeat(times);
+        public bool IsPrintable() => _bytes.IsPrintable();
 
         #region Static Method
 
@@ -253,6 +254,11 @@ namespace CipherTool
                 "UTF32" => Encoding.UTF32.GetBytes(str),
                 _ => throw new ArgumentException($"Unknown encoding {encoding}"),
             };
+        }
+
+        public static string Repeat(this string str, int times)
+        {
+            return string.Concat(Enumerable.Repeat(str, times));
         }
 
         public static bool IgnoreCaseContains(this string str, string sub)

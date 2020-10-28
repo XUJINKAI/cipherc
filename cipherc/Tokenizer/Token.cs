@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 using System.Text;
 using CipherTool.Cipher;
 using CipherTool.Exceptions;
@@ -44,15 +45,33 @@ namespace CipherTool.Tokenizer
 
     public static class TokenExtension
     {
-        private static readonly Dictionary<string, TokenType> TokenMapper = new Dictionary<string, TokenType>();
+        private static readonly IDictionary<string, TokenType> TokenMapper;
 
         static TokenExtension()
         {
-            var keywords = (TokenType[])Enum.GetValues(typeof(TokenType));
-            foreach (var key in keywords)
+            TokenMapper = GetDefaultTokenMapper();
+        }
+
+        public static IDictionary<string, TokenType> GetDefaultTokenMapper()
+        {
+            var tokenMapper = new Dictionary<string, TokenType>();
+            var tokens = (TokenType[])Enum.GetValues(typeof(TokenType));
+            foreach (var token in tokens)
             {
-                TokenMapper.Add(key.ToString().ToLower(ENV.CultureInfo), key);
+                var tokenAttr = token.GetType().GetMember(token.ToString())[0].GetCustomAttribute(typeof(TokenAttribute));
+                if (tokenAttr is TokenAttribute attr)
+                {
+                    foreach (var keyword in attr.Keywords)
+                    {
+                        tokenMapper.Add(keyword.ToLower(ENV.CultureInfo), token);
+                    }
+                }
+                else
+                {
+                    tokenMapper.Add(token.ToString().ToLower(ENV.CultureInfo), token);
+                }
             }
+            return tokenMapper;
         }
 
         public static TokenType GetTokenType(this Token token)

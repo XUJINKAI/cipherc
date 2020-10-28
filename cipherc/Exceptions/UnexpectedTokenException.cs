@@ -10,7 +10,8 @@ namespace CipherTool.Exceptions
     {
         private readonly string _message;
 
-        public override string Message => $"Unexpected token: {Token}{(string.IsNullOrEmpty(_message) ? "" : $", {_message}")}";
+        public override string Message
+            => $"Unexpected token: {Token.Text}{(string.IsNullOrEmpty(_message) ? "" : $", {_message}")}";
 
         public Token Token { get; private set; }
 

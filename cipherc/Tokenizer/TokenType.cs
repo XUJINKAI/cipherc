@@ -6,12 +6,12 @@ namespace CipherTool.Tokenizer
 {
     public enum TokenType : int
     {
-        Null,
-        Unknown,
+        [Token] Null,
+        [Token] Unknown,
 
-        SentenceEnd,
+        [Token("then")] SentenceEnd,
 
-        [TokenType("ascii")] Txt,
+        [Token("txt", "ascii")] Txt,
         Hex,
         Base64,
         Url,
@@ -29,8 +29,8 @@ namespace CipherTool.Tokenizer
         Sub,
         Print,
 
-        [TokenType("times")] RepeatData,
-        [TokenType("concat")] ConcatData,
+        [Token("repeat")] RepeatData,
+        [Token("concat")] ConcatData,
 
         Var,
         Obj,

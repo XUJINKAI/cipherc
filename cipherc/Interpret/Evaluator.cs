@@ -132,6 +132,7 @@ namespace CipherTool.Interpret
                 (DataSource.File) => File.ReadAllBytes(node.InputText),
                 (DataSource.Rand) => Cipher.Random.RandomBytes(int.Parse(node.InputText)),
                 (DataSource.Var) => Context.Variables[node.InputText],
+                (DataSource.Pipe) => Helper.GetPipeAllTextIn(),
                 _ => throw new Exception(),
             };
         }

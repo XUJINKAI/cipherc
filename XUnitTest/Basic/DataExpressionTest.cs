@@ -1,12 +1,11 @@
-using System;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace CipherTool.Test
+namespace CipherTool.Test.Basic
 {
-    public class DataExpression : TestBase
+    public class DataExpressionTest : TestBase
     {
-        public DataExpression(ITestOutputHelper output) : base(output)
+        public DataExpressionTest(ITestOutputHelper output) : base(output)
         {
         }
 

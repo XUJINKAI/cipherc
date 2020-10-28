@@ -8,8 +8,24 @@ namespace CipherTool
 {
     public static class Helper
     {
+#if DEBUG
+        private static bool _isMockConsoleInput;
+        private static string? _mockInputText;
+        public static void MockConsoleInput(string? text)
+        {
+            _isMockConsoleInput = true;
+            _mockInputText = text;
+        }
+#endif
         public static string GetPipeAllTextIn()
         {
+#if DEBUG
+            if (_isMockConsoleInput)
+            {
+                _isMockConsoleInput = false;
+                return _mockInputText ?? throw new NoPipeInputException();
+            }
+#endif
             try
             {
                 var x = Console.KeyAvailable;
