@@ -124,11 +124,6 @@ namespace CipherTool.Interpret
             }
         }
 
-        private HashOperator HashOperator()
-        {
-            return new HashOperator(Tokens.ReadEnum<HashAlgr>());
-        }
-
         private DataNode DataPrimary()
         {
             var source = Tokens.ReadEnum<DataSource>();

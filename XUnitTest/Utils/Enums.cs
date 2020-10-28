@@ -5,9 +5,9 @@ using Xunit.Abstractions;
 
 namespace CipherTool.Test.Utils
 {
-    public class Enum_Test : TestBase
+    public class Enums : TestBase
     {
-        public Enum_Test(ITestOutputHelper output) : base(output)
+        public Enums(ITestOutputHelper output) : base(output)
         {
         }
 

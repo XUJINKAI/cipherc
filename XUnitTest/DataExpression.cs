@@ -4,9 +4,9 @@ using Xunit.Abstractions;
 
 namespace CipherTool.Test
 {
-    public class DataExpression_Test : TestBase
+    public class DataExpression : TestBase
     {
-        public DataExpression_Test(ITestOutputHelper output) : base(output)
+        public DataExpression(ITestOutputHelper output) : base(output)
         {
         }
 

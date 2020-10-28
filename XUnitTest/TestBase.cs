@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CipherTool.Interpret;
-using CipherTool.Transform;
 using Xunit;
 using Xunit.Abstractions;
 
