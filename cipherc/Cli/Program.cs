@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
-using System.Runtime.InteropServices;
-using CipherTool.AST;
 using CipherTool.Interpret;
-using CipherTool.Tokenizer;
 
-namespace CipherTool
+namespace CipherTool.Cli
 {
     internal class Program
     {
@@ -28,7 +24,7 @@ namespace CipherTool
                 }
                 else
                 {
-                    ShowHelp();
+                    Console.WriteLine(HelpMenu.ShowHelp());
                 }
             }
             else if (args.Length == 1)
@@ -41,7 +37,7 @@ namespace CipherTool
                     case "-h":
                     case "--help":
                     case "help":
-                        ShowHelp();
+                        Console.WriteLine(HelpMenu.ShowHelp());
                         break;
                     default:
                         RunCmdArgs(interpreter, args);
@@ -64,7 +60,7 @@ namespace CipherTool
                 if (lineArgs.Length == 0) { continue; }
                 if (lineArgs.Length == 1 && lineArgs[0].ToLower(ENV.CultureInfo) == "help")
                 {
-                    ShowHelp();
+                    Console.WriteLine(HelpMenu.ShowHelp());
                     continue;
                 }
                 RunCmdArgs(interpreter, lineArgs);
@@ -87,11 +83,5 @@ namespace CipherTool
             }
 #endif
         }
-
-        static void ShowHelp()
-        {
-            Console.WriteLine("some help");
-        }
-
     }
 }

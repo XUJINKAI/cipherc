@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
 using System.Web;
 using CipherTool.AST;
 using CipherTool.Cipher;
+using CipherTool.Cli;
 using CipherTool.Exceptions;
 
 namespace CipherTool.Interpret
@@ -28,8 +26,14 @@ namespace CipherTool.Interpret
                 case Block block:
                     foreach (var sentence in block.Sentences)
                     {
-                        RunSentence(sentence);
+                        Visit(sentence);
                     }
+                    return;
+                case HelpStatement _:
+                    HelpMenu.ShowHelp();
+                    return;
+                case VariablesListStatement _:
+                    Context.WriteOutputLine(Context.ListVariables());
                     return;
                 case DataNode dataNode:
                     Evaluate(dataNode);
@@ -39,16 +43,6 @@ namespace CipherTool.Interpret
                     return;
                 default:
                     throw new UnknownNodeTypeException(node.GetType());
-            }
-        }
-
-        private void RunSentence(Node sentence)
-        {
-            switch (sentence)
-            {
-                case DataNode node:
-                    Evaluate(node);
-                    return;
             }
         }
 
@@ -64,6 +58,10 @@ namespace CipherTool.Interpret
                     return Evaluate(dataFactor);
                 case DataPrimary dataPrimary:
                     return Evaluate(dataPrimary);
+                case RandDataPrimary randDataPrimary:
+                    return Evaluate(randDataPrimary);
+                case PipeDataPrimary pipeDataPrimary:
+                    return Evaluate(pipeDataPrimary);
                 default:
                     throw new Exception();
             }
@@ -130,11 +128,20 @@ namespace CipherTool.Interpret
                 (DataSource.Hex) => Data.FromHexString(node.InputText),
                 (DataSource.Base64) => Data.FromBase64String(node.InputText),
                 (DataSource.File) => File.ReadAllBytes(node.InputText),
-                (DataSource.Rand) => Cipher.Random.RandomBytes(int.Parse(node.InputText)),
                 (DataSource.Var) => Context.Variables[node.InputText],
-                (DataSource.Pipe) => Helper.GetPipeAllTextIn(),
                 _ => throw new Exception(),
             };
         }
+
+        private Data Evaluate(RandDataPrimary node)
+        {
+            return Cipher.Random.RandomBytes(node.RandBytes);
+        }
+
+        private Data Evaluate(PipeDataPrimary node)
+        {
+            return ConsoleHelper.GetPipeAllTextIn();
+        }
+
     }
 }

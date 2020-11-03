@@ -6,6 +6,8 @@ namespace CipherTool.Exceptions
 {
     public class NoPipeInputException : GeneralException
     {
-        public override string Message { get; } = "Pipe is empty, use | to pass value into pipe.";
+        public const string FragmentMessage = "Pipe is empty";
+
+        public override string Message { get; } = $"{FragmentMessage}, use | to pass value into pipe.";
     }
 }

@@ -8,10 +8,12 @@ namespace CipherTool.Exceptions
 {
     public class UnexpectedTokenException : GeneralException
     {
+        public const string FragmentMessage = "Unexpected token";
+
         private readonly string _message;
 
         public override string Message
-            => $"Unexpected token: {Token.Text}{(string.IsNullOrEmpty(_message) ? "" : $", {_message}")}";
+            => $"{FragmentMessage}: {Token.Text}{(string.IsNullOrEmpty(_message) ? "" : $", {_message}")}";
 
         public Token Token { get; private set; }
 

@@ -7,10 +7,14 @@ namespace CipherTool.Interpret
     {
         IDictionary<string, Data> Variables { get; }
 
+        bool ThrowOnException { get; }
+
         void WriteOutputLine(string line);
 
         void WriteErrorLine(string line);
 
-        public PrintOperator GetDefaultPrintOperator();
+        PrintOperator GetDefaultPrintOperator();
+
+        string ListVariables();
     }
 }

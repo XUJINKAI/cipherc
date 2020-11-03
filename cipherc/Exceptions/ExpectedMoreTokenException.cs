@@ -6,6 +6,8 @@ namespace CipherTool.Exceptions
 {
     public class ExpectedMoreTokenException : GeneralException
     {
-        public override string Message { get; } = "Expect more tokens.";
+        public const string FragmentMessage = "Expect more tokens.";
+
+        public override string Message { get; } = $"{FragmentMessage}";
     }
 }

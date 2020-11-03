@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
-namespace CipherTool
+namespace CipherTool.Cli
 {
     public static class NativeMethods
     {

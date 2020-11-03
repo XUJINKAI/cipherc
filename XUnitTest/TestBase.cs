@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CipherTool.Cli;
 using CipherTool.Interpret;
 using Xunit.Abstractions;
 using Random = CipherTool.Cipher.Random;
@@ -32,13 +33,13 @@ namespace CipherTool.Test
         protected void MockConsoleIn(string? text)
         {
 #if DEBUG
-            Helper.MockConsoleInput(text);
+            ConsoleHelper.MockConsoleInput(text);
 #else
             throw new Exception($"MockConsoleIn function only work in Debug mode.");
 #endif
         }
 
-        protected void TestOutput(string arg, TestOutputDelegate assertFunc)
+        protected void TestOutput(string arg, TestOutputDelegate assertFunc, Action<Context> contextAction = null)
         {
             _testOutputHelper.WriteLine("Running command...");
             _testOutputHelper.WriteLine(arg);
@@ -52,7 +53,9 @@ namespace CipherTool.Test
                 EndOfLine = Endline,
                 OutputStream = new StreamWriter(outputStream) { AutoFlush = true },
                 ErrorStream = new StreamWriter(errorStream) { AutoFlush = true },
+                ThrowOnException = false,
             };
+            contextAction?.Invoke(context);
 
             var inter = new Interpreter(context);
             inter.Interpret(arg);
@@ -69,7 +72,7 @@ namespace CipherTool.Test
             _testOutputHelper.WriteLine(error);
 
             var lines = output.Split(Endline);
-            assertFunc.Invoke(lines, error);
+            assertFunc?.Invoke(lines, error);
         }
     }
 }

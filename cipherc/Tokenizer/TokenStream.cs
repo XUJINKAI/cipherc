@@ -88,7 +88,7 @@ namespace CipherTool.Tokenizer
             }
         }
 
-        public bool PeekType(params TokenType[] keywords)
+        public bool PeekType(params TokenEnum[] keywords)
         {
             var token = Peek();
             return token != null && keywords.Any(x => token.IsMatch(x));
@@ -102,7 +102,7 @@ namespace CipherTool.Tokenizer
 
         // Accept
 
-        public bool Accept(TokenType type)
+        public bool Accept(TokenEnum type)
         {
             if (PeekType(type))
             {
@@ -115,7 +115,7 @@ namespace CipherTool.Tokenizer
             }
         }
 
-        public bool Expect(TokenType keyword)
+        public bool Expect(TokenEnum keyword)
         {
             Token token = Read();
             if (token.IsMatch(keyword))

@@ -7,43 +7,43 @@ namespace CipherTool.AST
 {
     public enum DataSource : int
     {
-        Txt = TokenType.Txt,
-        Hex = TokenType.Hex,
-        Base64 = TokenType.Base64,
-        File = TokenType.File,
-        Var = TokenType.Var,
-        Rand = TokenType.Rand,
-        Pipe = TokenType.Pipe,
+        Txt = TokenEnum.Txt,
+        Hex = TokenEnum.Hex,
+        Base64 = TokenEnum.Base64,
+        File = TokenEnum.File,
+        Var = TokenEnum.Var,
+        Rand = TokenEnum.Rand,
+        Pipe = TokenEnum.Pipe,
     }
 
     public enum PrintFormat : int
     {
-        Txt = TokenType.Txt,
-        Hex = TokenType.Hex,
-        Base64 = TokenType.Base64,
+        Txt = TokenEnum.Txt,
+        Hex = TokenEnum.Hex,
+        Base64 = TokenEnum.Base64,
     }
 
     public enum EncodeFormat : int
     {
-        Hex = TokenType.Hex,
-        Base64 = TokenType.Base64,
-        Url = TokenType.Url,
+        Hex = TokenEnum.Hex,
+        Base64 = TokenEnum.Base64,
+        Url = TokenEnum.Url,
     }
 
     public enum DecodeFormat : int
     {
-        Hex = TokenType.Hex,
-        Base64 = TokenType.Base64,
-        Url = TokenType.Url,
-        Pem = TokenType.Pem,
+        Hex = TokenEnum.Hex,
+        Base64 = TokenEnum.Base64,
+        Url = TokenEnum.Url,
+        Pem = TokenEnum.Pem,
     }
 
     public enum HashAlgr : int
     {
-        Sm3 = TokenType.Sm3,
-        Md5 = TokenType.Md5,
-        Sha1 = TokenType.Sha1,
-        Sha256 = TokenType.Sha256,
+        Sm3 = TokenEnum.Sm3,
+        Md5 = TokenEnum.Md5,
+        Sha1 = TokenEnum.Sha1,
+        Sha256 = TokenEnum.Sha256,
     }
 
 }

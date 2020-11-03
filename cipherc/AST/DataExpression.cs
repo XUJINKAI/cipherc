@@ -62,18 +62,33 @@ namespace CipherTool.AST
     }
 
     /// <summary>
-    /// DataPrimary -> [ txt | hex | base64 | file | var | rand ] InputText | pipe
+    /// DataPrimary -> [ txt | hex | base64 | file | var ] InputText | rand <NUM> | pipe
     /// </summary>
     public class DataPrimary : DataNode
     {
-        public DataSource DataSource { get; set; }
+        public DataSource DataSource { get; }
 
-        public string InputText { get; set; }
+        public string InputText { get; }
 
         public DataPrimary(DataSource source, string input)
         {
             DataSource = source;
             InputText = input;
         }
+    }
+
+    public class RandDataPrimary : DataNode
+    {
+        public int RandBytes { get; }
+
+        public RandDataPrimary(int nRandBytes)
+        {
+            RandBytes = nRandBytes;
+        }
+    }
+
+    public class PipeDataPrimary : DataNode
+    {
+
     }
 }

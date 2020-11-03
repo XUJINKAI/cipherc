@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Xunit;
 using Xunit.Abstractions;
 using CipherTool;
@@ -29,6 +31,43 @@ namespace CipherTool.Test.Basic
             TestOutput($"hex {data.ToHexString()}", (output, error) =>
             {
                 Assert.Equal(data.ToHexString(), output.First());
+            });
+        }
+
+        [Fact]
+        public void LoadBase64()
+        {
+            var data = GetRandom(20);
+            TestOutput($"base64 {data.ToBase64String()}", (output, error) =>
+            {
+                Assert.Equal(data.ToHexString(), output.First());
+            });
+        }
+
+        [Fact]
+        public void LoadFile()
+        {
+            AppendLine(Directory.GetCurrentDirectory());
+            var data = GetRandom(40);
+            const string filename = "tmp";
+            File.WriteAllBytes(filename, data);
+            TestOutput($"file {filename}", (output, error) =>
+            {
+                Assert.Equal(data.ToHexString(), output.First());
+            });
+        }
+
+        [Fact]
+        public void LoadVar()
+        {
+            const string varName = "x";
+            var data = GetRandom(20);
+            TestOutput($"var {varName}", (output, error) =>
+            {
+                Assert.Equal(data.ToHexString(), output.First());
+            }, ctx =>
+            {
+                ctx.Variables.Add(varName, data);
             });
         }
 

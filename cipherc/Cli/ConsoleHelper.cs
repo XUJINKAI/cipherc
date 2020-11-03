@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using CipherTool.Exceptions;
 
-namespace CipherTool
+namespace CipherTool.Cli
 {
-    public static class Helper
+    public static class ConsoleHelper
     {
 #if DEBUG
         private static bool _isMockConsoleInput;

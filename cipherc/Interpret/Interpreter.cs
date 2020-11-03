@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using CipherTool.Cli;
 using CipherTool.Exceptions;
 using CipherTool.Tokenizer;
 
@@ -34,20 +36,24 @@ namespace CipherTool.Interpret
             catch (UnexpectedTokenException unexpectedTokenException)
             {
                 Context.WriteErrorLine(unexpectedTokenException.Message);
+                if (Context.ThrowOnException) throw;
             }
             catch (ExpectedMoreTokenException expectedMoreTokenException)
             {
                 Context.WriteErrorLine(expectedMoreTokenException.Message);
+                if (Context.ThrowOnException) throw;
             }
             catch (NoPipeInputException noPipeInputException)
             {
                 Context.WriteErrorLine(noPipeInputException.Message);
+                if (Context.ThrowOnException) throw;
             }
             catch (Exception exception)
             {
                 Context.WriteErrorLine(exception.Message);
                 if (exception.StackTrace != null)
                     Context.WriteErrorLine(exception.StackTrace);
+                if (Context.ThrowOnException) throw;
             }
         }
     }

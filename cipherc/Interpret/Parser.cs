@@ -29,7 +29,7 @@ namespace CipherTool.Interpret
         {
             var sentence = Sentence();
             var block = new Block(sentence);
-            while (Tokens.Accept(TokenType.SentenceEnd))
+            while (Tokens.Accept(TokenEnum.SentenceEnd))
             {
                 block.AddNode(Sentence());
             }
@@ -38,6 +38,15 @@ namespace CipherTool.Interpret
 
         private Node Sentence()
         {
+            switch (Tokens.Peek()?.GetTokenType())
+            {
+                case TokenEnum.Variables:
+                    Tokens.Read();
+                    return new VariablesListStatement();
+                case TokenEnum.Help:
+                    Tokens.Read();
+                    return new HelpStatement();
+            }
             var exp = Expression();
             return exp switch
             {
@@ -54,7 +63,7 @@ namespace CipherTool.Interpret
         private DataNode DataExpression()
         {
             var result = DataTerm();
-            while (Tokens.Accept(TokenType.ConcatData))
+            while (Tokens.Accept(TokenEnum.ConcatData))
             {
                 result = new DataConcator(result, DataTerm());
             }
@@ -65,7 +74,7 @@ namespace CipherTool.Interpret
         private DataNode DataTerm()
         {
             DataNode result = PostfixData();
-            while (Tokens.Accept(TokenType.RepeatData))
+            while (Tokens.Accept(TokenEnum.DuplicateData))
             {
                 result = new DataRepeator(result, Tokens.ReadInt());
             }
@@ -100,7 +109,7 @@ namespace CipherTool.Interpret
 
         private bool PeekDataOperator()
         {
-            return Tokens.PeekType(TokenType.Encode, TokenType.Decode, TokenType.Sub, TokenType.Print)
+            return Tokens.PeekType(TokenEnum.Encode, TokenEnum.Decode, TokenEnum.Sub, TokenEnum.Print)
                    || Tokens.PeekType<HashAlgr>();
         }
 
@@ -110,13 +119,13 @@ namespace CipherTool.Interpret
             var type = token.GetTokenType();
             switch (type)
             {
-                case TokenType.Encode:
+                case TokenEnum.Encode:
                     return new EncodeOperator(Tokens.ReadEnum<EncodeFormat>());
-                case TokenType.Decode:
+                case TokenEnum.Decode:
                     return new DecodeOperator(Tokens.ReadEnum<DecodeFormat>());
-                case TokenType.Sub:
+                case TokenEnum.Sub:
                     return new SubOperator(Tokens.ReadInt(), Tokens.ReadInt());
-                case TokenType.Print:
+                case TokenEnum.Print:
                     return new PrintOperator(Tokens.ReadEnum<PrintFormat>());
             }
 
@@ -134,12 +143,15 @@ namespace CipherTool.Interpret
         private DataNode DataPrimary()
         {
             var source = Tokens.ReadEnum<DataSource>();
-            var text = "";
-            if (source != DataSource.Pipe)
+            switch (source)
             {
-                text = Tokens.ReadText();
+                case DataSource.Pipe:
+                    return new PipeDataPrimary();
+                case DataSource.Rand:
+                    return new RandDataPrimary(Tokens.ReadInt());
+                default:
+                    return new DataPrimary(source, Tokens.ReadText());
             }
-            return new DataPrimary(source, text);
         }
     }
 }

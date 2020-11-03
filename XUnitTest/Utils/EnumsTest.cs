@@ -16,8 +16,8 @@ namespace CipherTool.Test.Utils
         [Fact]
         public void EnumCast()
         {
-            Assert.True(TokenType.Txt.CastToEnum<PrintFormat>() != null);
-            Assert.True(TokenType.Txt.CastToEnum<HashAlgr>() == null);
+            Assert.True(TokenEnum.Txt.CastToEnum<PrintFormat>() != null);
+            Assert.True(TokenEnum.Txt.CastToEnum<HashAlgr>() == null);
         }
 
         [Fact]
