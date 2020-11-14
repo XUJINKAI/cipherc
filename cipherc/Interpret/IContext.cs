@@ -7,6 +7,8 @@ namespace CipherTool.Interpret
     {
         IDictionary<string, Data> Variables { get; }
 
+        public string EndOfLine { get; }
+
         bool ThrowOnException { get; }
 
         void WriteOutputLine(string line);
@@ -14,7 +16,5 @@ namespace CipherTool.Interpret
         void WriteErrorLine(string line);
 
         PrintOperator GetDefaultPrintOperator();
-
-        string ListVariables();
     }
 }

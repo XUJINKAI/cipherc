@@ -4,7 +4,7 @@
   Command: dotnet publish -c Release -r win-x64 -o publish-win /p:PublishSingleFile=true --no-self-contained cipherc/cipherc.csproj
 
 - Name: Publish linux-x64 Debug
-  Command: dotnet publish -c Debug -r linux-x64 -o publish-linux-debug /p:PublishSingleFile=true --no-self-contained cipherc/cipherc.csproj
+  Command: dotnet publish -c Debug -r linux-x64 -o publish-linux-debug /p:PublishSingleFile=true /p:PublishTrimmed=true cipherc/cipherc.csproj
 
 - Name: Publish linux-x64 Release
-  Command: dotnet publish -c Release -r linux-x64 -o publish-linux /p:PublishSingleFile=true --no-self-contained cipherc/cipherc.csproj
+  Command: dotnet publish -c Release -r linux-x64 -o publish-linux /p:PublishSingleFile=true /p:PublishTrimmed=true cipherc/cipherc.csproj

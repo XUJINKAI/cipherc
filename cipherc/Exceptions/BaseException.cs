@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CipherTool.Exceptions
 {
-    public abstract class GeneralException : Exception
+    public abstract class BaseException : Exception
     {
 
     }

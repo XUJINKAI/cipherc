@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using CipherTool.AST;
 
@@ -22,15 +23,5 @@ namespace CipherTool.Interpret
         public void WriteErrorLine(string line) => ErrorStream.Write(line + EndOfLine);
 
         public PrintOperator GetDefaultPrintOperator() => new PrintOperator(DefaultPrintFormat);
-
-        public string ListVariables()
-        {
-            var sb = new StringBuilder();
-            foreach (var (key, value) in Variables)
-            {
-                sb.AppendLine($"{key,-10} = {value.ToHexString()}");
-            }
-            return sb.ToString();
-        }
     }
 }

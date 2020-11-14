@@ -9,7 +9,7 @@ namespace CipherTool.Tokenizer
         [TokenDescription(TokenType.Null)] Null,
         [TokenDescription(TokenType.Null)] Unknown,
 
-        [TokenDescription(TokenType.Command, "help", "-h", "--help")] Help,
+        [TokenDescription(TokenType.Command, "help")] Help,
         [TokenDescription(TokenType.Command, "vars")] Variables,
 
         [TokenDescription(TokenType.Grammar, "then")] SentenceEnd,

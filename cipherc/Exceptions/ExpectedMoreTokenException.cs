@@ -4,10 +4,11 @@ using System.Text;
 
 namespace CipherTool.Exceptions
 {
-    public class ExpectedMoreTokenException : GeneralException
+    public class ExpectedMoreTokenException : BaseException
     {
-        public const string FragmentMessage = "Expect more tokens.";
+        public const string KeyFragment = "Expect more tokens.";
 
-        public override string Message { get; } = $"{FragmentMessage}";
+        public override string Message => $"{KeyFragment}";
+
     }
 }

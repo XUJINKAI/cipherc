@@ -6,14 +6,14 @@ using CipherTool.Tokenizer;
 
 namespace CipherTool.Exceptions
 {
-    public class UnexpectedTokenException : GeneralException
+    public class UnexpectedTokenException : BaseException
     {
-        public const string FragmentMessage = "Unexpected token";
+        public const string KeyFragment = "Unexpected token";
 
         private readonly string _message;
 
         public override string Message
-            => $"{FragmentMessage}: {Token.Text}{(string.IsNullOrEmpty(_message) ? "" : $", {_message}")}";
+            => $"{KeyFragment}: {Token.Text}{(string.IsNullOrEmpty(_message) ? "" : $", {_message}")}";
 
         public Token Token { get; private set; }
 

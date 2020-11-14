@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using CipherTool.Cli;
 using CipherTool.Interpret;
@@ -53,12 +54,21 @@ namespace CipherTool.Test
                 EndOfLine = Endline,
                 OutputStream = new StreamWriter(outputStream) { AutoFlush = true },
                 ErrorStream = new StreamWriter(errorStream) { AutoFlush = true },
-                ThrowOnException = false,
+                ThrowOnException = true,
             };
             contextAction?.Invoke(context);
 
             var inter = new Interpreter(context);
-            inter.Interpret(arg);
+            Exception? remExp = null;
+
+            try
+            {
+                inter.Interpret(arg);
+            }
+            catch (Exception exp)
+            {
+                remExp = exp;
+            }
 
             outputStream.Position = 0;
             errorStream.Position = 0;
@@ -71,8 +81,14 @@ namespace CipherTool.Test
             _testOutputHelper.WriteLine("Error:");
             _testOutputHelper.WriteLine(error);
 
-            var lines = output.Split(Endline);
+            var lines = string.IsNullOrEmpty(output) ? Array.Empty<string>() : output.Split(Endline);
             assertFunc?.Invoke(lines, error);
+
+            if (remExp != null)
+            {
+                _testOutputHelper.WriteLine($"{remExp.Message}{Endline}{remExp.StackTrace}");
+                throw remExp;
+            }
         }
     }
 }

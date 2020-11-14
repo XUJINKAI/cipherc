@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Web;
 using CipherTool.AST;
 using CipherTool.Cipher;
@@ -18,6 +20,21 @@ namespace CipherTool.Interpret
             Context = context;
         }
 
+        public static void WriteVariablesList(IContext context)
+        {
+            Contract.Assume(context != null);
+            var Variables = context.Variables;
+            var EndOfLine = context.EndOfLine;
+
+            if (Variables.Count == 0)
+            {
+                return;
+            }
+
+            var result = string.Join(EndOfLine, Variables.Select(item => $"{item.Key} = {item.Value.ToHexString()}"));
+            context.WriteOutputLine(result);
+        }
+
         public void Visit(Node node)
         {
             Contract.Assume(node != null);
@@ -29,11 +46,11 @@ namespace CipherTool.Interpret
                         Visit(sentence);
                     }
                     return;
-                case HelpStatement _:
-                    HelpMenu.ShowHelp();
+                case HelpStatement:
+                    Context.WriteOutputLine(HelpMenu.GetHelpText());
                     return;
-                case VariablesListStatement _:
-                    Context.WriteOutputLine(Context.ListVariables());
+                case VariablesListStatement:
+                    WriteVariablesList(Context);
                     return;
                 case DataNode dataNode:
                     Evaluate(dataNode);

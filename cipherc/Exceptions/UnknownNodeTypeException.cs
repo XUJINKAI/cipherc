@@ -4,15 +4,18 @@ using System.Diagnostics.Contracts;
 
 namespace CipherTool.Exceptions
 {
-    public class UnknownNodeTypeException : Exception
+    public class UnknownNodeTypeException : BaseException
     {
-        public Type Type { get; }
+        public const string KeyFragment = "Unknown Type";
 
-        public UnknownNodeTypeException(Type type)
-            : base($"Unknown Type {type.FullName}.")
+        public override string Message => $"{KeyFragment} {NodeType.FullName}.";
+
+        public Type NodeType { get; }
+
+        public UnknownNodeTypeException(Type nodeType)
         {
-            Contract.Assume(type != null);
-            Type = type;
+            Contract.Assume(nodeType != null);
+            NodeType = nodeType;
         }
     }
 }

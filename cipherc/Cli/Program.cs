@@ -24,7 +24,7 @@ namespace CipherTool.Cli
                 }
                 else
                 {
-                    Console.WriteLine(HelpMenu.ShowHelp());
+                    Console.WriteLine(HelpMenu.GetHelpText());
                 }
             }
             else if (args.Length == 1)
@@ -37,7 +37,7 @@ namespace CipherTool.Cli
                     case "-h":
                     case "--help":
                     case "help":
-                        Console.WriteLine(HelpMenu.ShowHelp());
+                        Console.WriteLine(HelpMenu.GetHelpText());
                         break;
                     default:
                         RunCmdArgs(interpreter, args);
@@ -60,7 +60,7 @@ namespace CipherTool.Cli
                 if (lineArgs.Length == 0) { continue; }
                 if (lineArgs.Length == 1 && lineArgs[0].ToLower(ENV.CultureInfo) == "help")
                 {
-                    Console.WriteLine(HelpMenu.ShowHelp());
+                    Console.WriteLine(HelpMenu.GetHelpText());
                     continue;
                 }
                 RunCmdArgs(interpreter, lineArgs);

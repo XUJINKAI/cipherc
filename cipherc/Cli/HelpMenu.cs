@@ -8,7 +8,7 @@ namespace CipherTool.Cli
 {
     public static class HelpMenu
     {
-        public static string ShowHelp()
+        public static string GetHelpText()
         {
             var sb = new StringBuilder();
             sb.AppendLine($"Input format: {EnumHelper.StringJoinEnums<DataSource>()}");

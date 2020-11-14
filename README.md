@@ -64,7 +64,7 @@ PrefixData ->  { DataOperator } DataPrimary
 
 DataPrimary ->
           DataSource <input>                // file <Path> | var <VAR> | rand <N-bytes>
-        | pipe                              // txt <pipeInputString>
+        | pipe                              // --> txt <pipeInputString>
 
 DataOperator ->
         | encode EncodeFormat
@@ -72,7 +72,7 @@ DataOperator ->
         | sub <Nstart> <Nlength>
         | HashOperator
 
-InputSource  -> txt | hex | base64 | file | var | rand
+DataSource   -> txt | hex | base64 | file | var | rand
 PrintFormat  -> txt | hex | base64
 EncodeFormat -> txt | hex | base64 | url
 DecodeFormat -> txt | hex | base64 | url | pem
