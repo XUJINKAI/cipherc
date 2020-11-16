@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using CipherTool.Cli;
 using CipherTool.Exceptions;
@@ -15,13 +13,13 @@ namespace CipherTool.Test
 {
     public static class InOutTestCases
     {
-        private static IEnumerable<(string txt, string hex, string base64)> VarySet()
+        private static IEnumerable<(string txt, string hex, string base64)> BasicArgs()
         {
             yield return ("1234567890", "31323334353637383930", "MTIzNDU2Nzg5MA==");
             yield return ("!@#ASDzcv()_*u7890", "2140234153447A637628295F2A7537383930", "IUAjQVNEemN2KClfKnU3ODkw");
         }
 
-        private static List<TestCase> VaryCases(string txt, string hex, string base64) => new List<TestCase>()
+        private static List<TestCase> BasicCases(string txt, string hex, string base64) => new List<TestCase>()
         {
             new TestCase($"txt {txt}", hex),
             new TestCase($"txt {txt} print txt", txt),
@@ -39,6 +37,11 @@ namespace CipherTool.Test
             new TestCase($"base64 {base64} print base64", base64),
         };
 
+        private static List<TestCase> FormatCases(string txt, string hex, string base64) => new List<TestCase>()
+        {
+            //new TestCase($"hex {hex} encode base64")
+        };
+
         private static List<TestCase> ConstCases() => new List<TestCase>()
         {
             // NonAscii
@@ -54,7 +57,7 @@ namespace CipherTool.Test
             new TestCase("rand 64 print hex", (lines,error) => Assert.True(lines[0].Length == 128)),
 
             new TestCase("hex 1234 then hex ABCD", "1234", "ABCD"),
-            new TestCase("hex 31323334353637383930 print ascii then print hex base64 MTIzNDU2Nzg5MA==", "1234567890", "31323334353637383930"),
+            new TestCase("hex 31323334353637383930 print txt then print hex base64 MTIzNDU2Nzg5MA==", "1234567890", "31323334353637383930"),
             
             // Grammar
             new TestCase("help"),
@@ -78,17 +81,12 @@ namespace CipherTool.Test
 
         public static IEnumerable<object[]> GetTestCases()
         {
-            foreach (var dataSet in VarySet())
-            {
-                foreach (var testCase in VaryCases(dataSet.txt, dataSet.hex, dataSet.base64))
-                {
+            foreach (var arg in BasicArgs())
+                foreach (var testCase in BasicCases(arg.txt, arg.hex, arg.base64))
                     yield return new object[] { testCase };
-                }
-            }
+
             foreach (var testCase in ConstCases())
-            {
                 yield return new object[] { testCase };
-            }
         }
     }
 

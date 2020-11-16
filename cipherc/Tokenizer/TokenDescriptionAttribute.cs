@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CipherTool.Tokenizer
 {
@@ -10,18 +11,30 @@ namespace CipherTool.Tokenizer
 
         public string Description { get; set; } = "";
 
-        public TokenType Type { get; set; }
+        public IReadOnlyCollection<TokenType> Types { get; set; }
 
         public TokenDescriptionAttribute(TokenType tokenType)
         {
-            Type = tokenType;
+            Types = new List<TokenType>(new TokenType[] { tokenType });
             Keywords = new List<string>();
         }
 
         public TokenDescriptionAttribute(TokenType tokenType, params string[] keywords)
         {
-            Type = tokenType;
+            Types = new List<TokenType>(new TokenType[] { tokenType });
             Keywords = new List<string>(keywords);
+        }
+
+        public TokenDescriptionAttribute(params TokenType[] tokenTypes)
+        {
+            Keywords = new List<string>();
+            Types = new List<TokenType>(tokenTypes);
+        }
+
+        public TokenDescriptionAttribute(string keyword, params TokenType[] tokenTypes)
+        {
+            Keywords = new List<string>(new string[] { keyword });
+            Types = new List<TokenType>(tokenTypes);
         }
     }
 }

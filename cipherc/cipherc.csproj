@@ -8,7 +8,7 @@
     <Authors>XUJINKAI</Authors>
     <PackageProjectUrl>https://github.com/XUJINKAI/cipherc</PackageProjectUrl>
     <RepositoryUrl>https://github.com/XUJINKAI/cipherc</RepositoryUrl>
-    <AssemblyName>cc</AssemblyName>
+    <AssemblyName>cipherc</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

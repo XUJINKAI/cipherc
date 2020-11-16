@@ -22,14 +22,14 @@ namespace CipherTool.Tokenizer
 
         public static bool operator !=(Token token, TokenEnum keyword) => !token.IsMatch(keyword);
 
-        public static bool Equals(Token left, Token right) => left.GetTokenType() == right.GetTokenType();
+        public static bool Equals(Token left, Token right) => left.GetTokenEnum() == right.GetTokenEnum();
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj switch
             {
-                Token t => this.GetTokenType() == t.GetTokenType(),
-                TokenEnum k => this.GetTokenType() == k,
+                Token t => this.GetTokenEnum() == t.GetTokenEnum(),
+                TokenEnum k => this.GetTokenEnum() == k,
                 _ => false,
             };
         }

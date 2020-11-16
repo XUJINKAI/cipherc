@@ -56,6 +56,8 @@ namespace CipherTool.Cli
             {
                 Console.Write("> ");
                 var line = Console.ReadLine();
+                if (line == null) continue;
+
                 var lineArgs = NativeMethods.CommandLineToArgs(line);
                 if (lineArgs.Length == 0) { continue; }
                 if (lineArgs.Length == 1 && lineArgs[0].ToLower(ENV.CultureInfo) == "help")

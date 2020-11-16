@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CipherTool.AST;
+using CipherTool.Tokenizer;
 using CipherTool.Utils;
 
 namespace CipherTool.Cli
@@ -11,10 +12,10 @@ namespace CipherTool.Cli
         public static string GetHelpText()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Input format: {EnumHelper.StringJoinEnums<DataSource>()}");
-            sb.AppendLine($"Encode format: {EnumHelper.StringJoinEnums<EncodeFormat>()}");
-            sb.AppendLine($"Decode format: {EnumHelper.StringJoinEnums<DecodeFormat>()}");
-            sb.AppendLine($"Hash Algr: {EnumHelper.StringJoinEnums<HashAlgr>()}");
+            sb.AppendLine($"Input format: {TokenType.DataSource.GetTokenEnumsString()}");
+            sb.AppendLine($"Encode format: {TokenType.EncodeFormat.GetTokenEnumsString()}");
+            sb.AppendLine($"Decode format: {TokenType.DecodeFormat.GetTokenEnumsString()}");
+            sb.AppendLine($"Hash Algr: {TokenType.Hash.GetTokenEnumsString()}");
             return sb.ToString();
         }
     }

@@ -54,11 +54,11 @@ Expression -> DataExpression
 
 DataExpression -> DataTerm { concat DataTerm }      // plus
 
-DataTerm -> DataFactor { times <N> }                // multiply
+DataTerm -> DataFactor { repeat <N> }                // multiply
 
 DataFactor -> PostfixData
 // 先计算前缀，再计算后缀
-PostfixData -> PrefixData { DataOperator | print PrintFormat }
+PostfixData -> PrefixData { DataOperator }
 
 PrefixData ->  { DataOperator } DataPrimary
 
@@ -71,6 +71,8 @@ DataOperator ->
         | decode DecodeFormat
         | sub <Nstart> <Nlength>
         | HashOperator
+        | print PrintFormat
+        | printf PrintFormat
 
 DataSource   -> txt | hex | base64 | file | var | rand
 PrintFormat  -> txt | hex | base64

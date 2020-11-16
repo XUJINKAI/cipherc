@@ -1,56 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using T = CipherTool.Tokenizer.TokenType;
 
 namespace CipherTool.Tokenizer
 {
     public enum TokenEnum : int
     {
-        [TokenDescription(TokenType.Null)] Null,
-        [TokenDescription(TokenType.Null)] Unknown,
+        [TokenDescription(T.Null)] Null,
+        [TokenDescription(T.Null)] Unknown,
 
-        [TokenDescription(TokenType.Command, "help")] Help,
-        [TokenDescription(TokenType.Command, "vars")] Variables,
+        [TokenDescription(T.Command, "help")] Help,
+        [TokenDescription(T.Command, "vars")] Variables,
 
-        [TokenDescription(TokenType.Grammar, "then")] SentenceEnd,
-        [TokenDescription(TokenType.Grammar)] Var,
-        [TokenDescription(TokenType.Grammar)] Obj,
-        [TokenDescription(TokenType.Grammar, "is", "=")] AssignSymbol,
+        [TokenDescription(T.Grammar, "then")] SentenceEnd,
+        [TokenDescription(T.Grammar)] Obj,
+        [TokenDescription(T.Grammar, "is", "=")] AssignSymbol,
 
-        [TokenDescription(TokenType.DataFormat, "txt", "ascii")] Txt,
-        [TokenDescription(TokenType.DataFormat)] Hex,
-        [TokenDescription(TokenType.DataFormat)] Base64,
-        [TokenDescription(TokenType.DataFormat)] Pem,
-        [TokenDescription(TokenType.DataFormat)] Url,
+        [TokenDescription(T.DataSource, T.PrintFormat)] Txt,
+        [TokenDescription(T.DataSource, T.PrintFormat, T.EncodeFormat, T.DecodeFormat)] Hex,
+        [TokenDescription(T.DataSource, T.PrintFormat, T.EncodeFormat, T.DecodeFormat)] Bin,
+        [TokenDescription(T.DataSource, T.PrintFormat, T.EncodeFormat, T.DecodeFormat)] Base64,
+        [TokenDescription(T.DataSource, T.EncodeFormat, T.DecodeFormat)] Url,
 
-        [TokenDescription(TokenType.DataSource)] Rand,
-        [TokenDescription(TokenType.DataSource)] File,
-        [TokenDescription(TokenType.DataSource)] Pipe,
+        [TokenDescription(T.DataSource)] Var,
+        [TokenDescription(T.DataSource)] File,
+        [TokenDescription(T.DataSource)] Rand,
+        [TokenDescription(T.DataSource)] Pipe,
 
-        [TokenDescription(TokenType.DataAction)] Encode,
-        [TokenDescription(TokenType.DataAction)] Decode,
-        [TokenDescription(TokenType.DataAction)] Sub,
-        [TokenDescription(TokenType.DataAction)] Print,
+        [TokenDescription(T.DataAction)] Encode,
+        [TokenDescription(T.DataAction)] Decode,
+        [TokenDescription(T.DataAction)] Sub,
+        [TokenDescription(T.DataAction)] Print,
+        [TokenDescription("printf", T.DataAction)] PrintReadable,
+        [TokenDescription(T.DataAction, "repeat")] DuplicateData,
+        [TokenDescription(T.DataAction, "concat")] ConcatData,
 
-        [TokenDescription(TokenType.DataAction, "repeat")] DuplicateData,
-        [TokenDescription(TokenType.DataAction, "concat")] ConcatData,
-
-        [TokenDescription(TokenType.Hash)] Sm3,
-        [TokenDescription(TokenType.Hash)] Md5,
-        [TokenDescription(TokenType.Hash)] Sha1,
-        [TokenDescription(TokenType.Hash)] Sha256,
-    }
-
-    public static class TokenEnumExtension
-    {
-        public static T? CastToEnum<T>(this TokenEnum tokenType) where T : struct, Enum
-        {
-            int i = (int)tokenType;
-            if (Enum.IsDefined(typeof(T), i))
-            {
-                return Enum.Parse<T>(i.ToString());
-            }
-            return null;
-        }
+        [TokenDescription(T.Hash)] Sm3,
+        [TokenDescription(T.Hash)] Md5,
+        [TokenDescription(T.Hash)] Sha1,
+        [TokenDescription(T.Hash)] Sha256,
+        [TokenDescription(T.Hash)] Sha384,
+        [TokenDescription(T.Hash)] Sha512,
+        [TokenDescription(T.Hash)] Sha3,
     }
 }

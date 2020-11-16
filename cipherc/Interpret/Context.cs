@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CipherTool.AST;
+using CipherTool.Tokenizer;
 
 namespace CipherTool.Interpret
 {
@@ -12,7 +13,7 @@ namespace CipherTool.Interpret
         public string EndOfLine { get; set; } = Environment.NewLine;
         public TextWriter OutputStream { get; set; } = Console.Out;
         public TextWriter ErrorStream { get; set; } = Console.Error;
-        public PrintFormat DefaultPrintFormat { get; set; } = PrintFormat.Hex;
+        public TokenEnum DefaultPrintFormat { get; set; } = TokenEnum.Hex;
 
         public IDictionary<string, Data> Variables { get; } = new Dictionary<string, Data>();
 

@@ -46,15 +46,22 @@ namespace CipherTool.Tokenizer
             }
         }
 
-        public T ReadEnum<T>() where T : struct, Enum
+        public TokenEnum ReadTokenEnum()
         {
             var token = Read();
-            var t = token.ToEnum<T>();
-            if (t.HasValue)
-            {
-                return t.Value;
-            }
-            throw new UnexpectedTokenException(token);
+            var t = token.GetTokenEnum();
+            if (t == TokenEnum.Unknown)
+                throw new UnexpectedTokenException(token);
+            return t;
+        }
+
+        public TokenEnum ReadTokenEnum(TokenType tokenType)
+        {
+            var token = Read();
+            var t = token.GetTokenEnum();
+            if (t == TokenEnum.Unknown || !t.IsMatchTokenType(tokenType))
+                throw new UnexpectedTokenException(token);
+            return t;
         }
 
         public int ReadInt()
@@ -73,9 +80,9 @@ namespace CipherTool.Tokenizer
             return token.Text;
         }
 
-        // PeekType
+        // Peek
 
-        public Token? Peek(int offset = 1)
+        public Token? PeekToken(int offset = 1)
         {
             var idx = _index + offset;
             if (IsValidIndex(idx))
@@ -88,25 +95,29 @@ namespace CipherTool.Tokenizer
             }
         }
 
-        public bool PeekType(params TokenEnum[] keywords)
+        public bool Peek(int offset, params TokenEnum[] keywords)
         {
-            var token = Peek();
-            return token != null && keywords.Any(x => token.IsMatch(x));
+            var @enum = PeekToken(offset)?.GetTokenEnum();
+            return @enum != null && keywords.Any(x => x == @enum);
         }
 
-        public bool PeekType<T>() where T : struct, Enum
+        public bool Peek(params TokenEnum[] keywords) => Peek(1, keywords);
+
+        public bool Peek(int offset, params TokenType[] types)
         {
-            var token = Peek();
-            return token?.ToEnum<T>() != null;
+            var @enum = PeekToken(offset)?.GetTokenEnum();
+            return @enum != null && types.Any(@type => @enum.Value.IsMatchTokenType(@type));
         }
+
+        public bool Peek(params TokenType[] types) => Peek(1, types);
 
         // Accept
 
-        public bool Accept(TokenEnum type)
+        public bool Accept(TokenEnum tokenEnum)
         {
-            if (PeekType(type))
+            if (Peek(tokenEnum))
             {
-                var token = Read();
+                _ = Read();
                 return true;
             }
             else

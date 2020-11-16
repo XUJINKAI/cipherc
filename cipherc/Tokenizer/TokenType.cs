@@ -3,11 +3,18 @@
     public enum TokenType
     {
         Null,
+        Custom,
+
         Command,
         Grammar,
-        DataFormat,
+
         DataSource,
+        PrintFormat,
+        EncodeFormat,
+        DecodeFormat,
+
         DataAction,
+
         Hash,
         Asym,
         Sym,

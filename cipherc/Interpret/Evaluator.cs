@@ -8,9 +8,11 @@ using CipherTool.AST;
 using CipherTool.Cipher;
 using CipherTool.Cli;
 using CipherTool.Exceptions;
+using CipherTool.Tokenizer;
 
 namespace CipherTool.Interpret
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:将成员标记为 static", Justification = "<挂起>")]
     public class Evaluator : IVisitor
     {
         public IContext Context { get; }
@@ -56,7 +58,7 @@ namespace CipherTool.Interpret
                     Evaluate(dataNode);
                     return;
                 case Assignment assignment:
-                    Context.Variables.Add(assignment.VarName, Evaluate(assignment.Data));
+                    Context.Variables[assignment.VarName] = Evaluate(assignment.Data);
                     return;
                 default:
                     throw new UnknownNodeTypeException(node.GetType());
@@ -65,23 +67,16 @@ namespace CipherTool.Interpret
 
         private Data Evaluate(DataNode node)
         {
-            switch (node)
+            return node switch
             {
-                case DataConcator dataConcator:
-                    return Evaluate(dataConcator.Left).Concat(Evaluate(dataConcator.Right));
-                case DataRepeator dataRepeator:
-                    return Evaluate(dataRepeator.DataFactor).Repeat(dataRepeator.RepeatTimes);
-                case DataFactor dataFactor:
-                    return Evaluate(dataFactor);
-                case DataPrimary dataPrimary:
-                    return Evaluate(dataPrimary);
-                case RandDataPrimary randDataPrimary:
-                    return Evaluate(randDataPrimary);
-                case PipeDataPrimary pipeDataPrimary:
-                    return Evaluate(pipeDataPrimary);
-                default:
-                    throw new Exception();
-            }
+                DataConcator dataConcator => Evaluate(dataConcator.Left).Concat(Evaluate(dataConcator.Right)),
+                DataRepeator dataRepeator => Evaluate(dataRepeator.DataFactor).Repeat(dataRepeator.RepeatTimes),
+                DataFactor dataFactor => Evaluate(dataFactor),
+                DataPrimary dataPrimary => Evaluate(dataPrimary),
+                RandDataPrimary randDataPrimary => Evaluate(randDataPrimary),
+                PipeDataPrimary pipeDataPrimary => Evaluate(pipeDataPrimary),
+                _ => throw new Exception(),
+            };
         }
 
         private Data Evaluate(DataFactor factor)
@@ -92,26 +87,29 @@ namespace CipherTool.Interpret
                 case HashOperator hashOperator:
                     return hashOperator.HashAlgr switch
                     {
-                        HashAlgr.Sm3 => Hash.SM3(data),
-                        HashAlgr.Md5 => Hash.MD5(data),
-                        HashAlgr.Sha1 => Hash.SHA1(data),
-                        HashAlgr.Sha256 => Hash.SHA256(data),
+                        TokenEnum.Sm3 => Hash.SM3(data),
+                        TokenEnum.Md5 => Hash.MD5(data),
+                        TokenEnum.Sha1 => Hash.SHA1(data),
+                        TokenEnum.Sha256 => Hash.SHA256(data),
+                        TokenEnum.Sha384 => Hash.SHA384(data),
+                        TokenEnum.Sha512 => Hash.SHA512(data),
+                        TokenEnum.Sha3 => Hash.SHA3(data),
                         _ => throw new NotImplementedException(),
                     };
                 case EncodeOperator encodeOperator:
                     return encodeOperator.EncodeFormat switch
                     {
-                        EncodeFormat.Base64 => data.ToBase64String(),
-                        EncodeFormat.Hex => data.ToHexString(),
-                        EncodeFormat.Url => HttpUtility.UrlEncode(data),
+                        TokenEnum.Base64 => data.ToBase64String(),
+                        TokenEnum.Hex => data.ToHexString(),
+                        TokenEnum.Url => HttpUtility.UrlEncode(data),
                         _ => throw new NotImplementedException(),
                     };
                 case DecodeOperator decodeOperator:
                     return decodeOperator.DecodeFormat switch
                     {
-                        DecodeFormat.Base64 => Data.FromBase64String(data.ToAsciiString()),
-                        DecodeFormat.Hex => Data.FromHexString(data.ToAsciiString()),
-                        DecodeFormat.Url => HttpUtility.UrlDecodeToBytes(data.ToAsciiString()),
+                        TokenEnum.Base64 => Data.FromBase64String(data.ToAsciiString()),
+                        TokenEnum.Hex => Data.FromHexString(data.ToAsciiString()),
+                        TokenEnum.Url => HttpUtility.UrlDecodeToBytes(data.ToAsciiString()),
                         _ => throw new NotImplementedException(),
                     };
                 case SubOperator subOperator:
@@ -119,13 +117,16 @@ namespace CipherTool.Interpret
                 case PrintOperator printOperator:
                     switch (printOperator.PrintFormat)
                     {
-                        case PrintFormat.Txt:
+                        case TokenEnum.Txt:
                             Context.WriteOutputLine(data.ToAsciiString());
                             break;
-                        case PrintFormat.Hex:
+                        case TokenEnum.Hex:
                             Context.WriteOutputLine(data.ToHexString());
                             break;
-                        case PrintFormat.Base64:
+                        case TokenEnum.Bin:
+                            Context.WriteOutputLine(data.ToBinaryString());
+                            break;
+                        case TokenEnum.Base64:
                             Context.WriteOutputLine(data.ToBase64String());
                             break;
                         default:
@@ -141,11 +142,12 @@ namespace CipherTool.Interpret
         {
             return (node.DataSource) switch
             {
-                (DataSource.Txt) => node.InputText,
-                (DataSource.Hex) => Data.FromHexString(node.InputText),
-                (DataSource.Base64) => Data.FromBase64String(node.InputText),
-                (DataSource.File) => File.ReadAllBytes(node.InputText),
-                (DataSource.Var) => Context.Variables[node.InputText],
+                (TokenEnum.Txt) => node.InputText,
+                (TokenEnum.Hex) => Data.FromHexString(node.InputText),
+                (TokenEnum.Bin) => Data.FromBinaryString(node.InputText),
+                (TokenEnum.Base64) => Data.FromBase64String(node.InputText),
+                (TokenEnum.File) => File.ReadAllBytes(node.InputText),
+                (TokenEnum.Var) => Context.Variables[node.InputText],
                 _ => throw new Exception(),
             };
         }
@@ -155,7 +157,7 @@ namespace CipherTool.Interpret
             return Cipher.Random.RandomBytes(node.RandBytes);
         }
 
-        private Data Evaluate(PipeDataPrimary node)
+        private Data Evaluate(PipeDataPrimary _)
         {
             return ConsoleHelper.GetPipeAllTextIn();
         }

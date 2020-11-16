@@ -12,6 +12,12 @@ namespace CipherTool.Test.Utils
         }
 
         [Fact]
+        public void StringConvert()
+        {
+            Assert.Equal("00000001 00001010 01100100 11111111 11001000 00010100 00000010", new byte[] { 1, 10, 100, 255, 200, 20, 2 }.ToBinaryString(" "));
+        }
+
+        [Fact]
         public void BytesConcat()
         {
             var left = "1234";

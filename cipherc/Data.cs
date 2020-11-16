@@ -2,7 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Org.BouncyCastle.Crypto.Generators;
+
+#pragma warning disable CA2225 // 运算符重载具有命名的备用项
 
 namespace CipherTool
 {
@@ -12,9 +13,7 @@ namespace CipherTool
     public readonly struct Data : IEquatable<Data>, IEquatable<byte[]>
     {
         private readonly byte[] _bytes;
-
         public int Length => _bytes.Length;
-
         public byte[] GetBytes() => _bytes.DeepCopy() ?? throw new Exception();
 
         #region Constructor
@@ -23,21 +22,15 @@ namespace CipherTool
         /// 使用UTF8编码字符串初始化
         /// </summary>
         /// <param name="plainString"></param>
-        public Data(string plainString)
-        {
-            _bytes = plainString.GetBytes();
-        }
-
-        public Data(byte[] byteArray)
-        {
-            _bytes = byteArray;
-        }
+        public Data(string plainString) => _bytes = plainString.GetBytes();
+        public Data(byte[] byteArray) => _bytes = byteArray;
 
         public static Data FromBytes(byte[] bytes) => new Data(bytes);
         public static Data FromUtf8String(string plainString) => new Data(plainString.GetBytes("UTF8"));
         public static Data FromAsciiString(string plainString) => new Data(plainString.GetBytes("ASCII"));
         public static Data FromBase64String(string base64) => new Data(FromBase64StringToByteArray(base64));
         public static Data FromHexString(string hexString) => new Data(FromHexStringToByteArray(hexString));
+        public static Data FromBinaryString(string binString) => new Data(FromBinaryStringToByteArray(binString));
         public static Data FromFile(string path) => new Data(File.ReadAllBytes(path));
 
         #endregion
@@ -55,11 +48,8 @@ namespace CipherTool
         public string ToAsciiString() => FromBytesToAsciiString(_bytes);
         public string ToBase64String() => _bytes.ToBase64String();
         public string ToHexString(string sep = "") => _bytes.ToHexString(sep);
-
-        public void SaveToFile(string path)
-        {
-            File.WriteAllBytes(path, _bytes);
-        }
+        public string ToBinaryString(string sep = "") => _bytes.ToBinaryString(sep);
+        public void SaveToFile(string path) => File.WriteAllBytes(path, _bytes);
 
         #endregion
 
@@ -78,11 +68,7 @@ namespace CipherTool
         /// </summary>
         /// <returns></returns>
         public override string ToString() => ToHexString("");
-
-        public override int GetHashCode()
-        {
-            return _bytes.GetHashCode();
-        }
+        public override int GetHashCode() => _bytes.GetHashCode();
 
         public bool Equals(Data other) => _bytes.SequenceEqual(other._bytes);
 
@@ -124,13 +110,32 @@ namespace CipherTool
             return bytes;
         }
 
+        /// <summary>
+        /// valid input: 1100, 11110000
+        /// </summary>
+        /// <param name="binStr"></param>
+        /// <returns></returns>
+        public static byte[] FromBinaryStringToByteArray(string binStr)
+        {
+            if (binStr == null) throw new ArgumentNullException(nameof(binStr));
+
+            var input = binStr.PadLeft((binStr.Length + 7) / 8 * 8, '0');
+            int numOfBytes = input.Length / 8;
+            byte[] bytes = new byte[numOfBytes];
+            for (int i = 0; i < numOfBytes; ++i)
+            {
+                bytes[i] = Convert.ToByte(input.Substring(8 * i, 8), 2);
+            }
+            return bytes;
+        }
+
         public static byte[] FromBase64StringToByteArray(string base64Str)
         {
             return Convert.FromBase64String(base64Str);
         }
 
         /// <summary>
-        /// 注意：并非所有Byte都是可读字符。此转换仅用于查看，再转回去不一定是原文。
+        /// 注意：并非所有Byte都是可读字符。
         /// </summary>
         /// <returns></returns>
         public static string FromBytesToAsciiString(byte[] array)
@@ -146,6 +151,8 @@ namespace CipherTool
     {
         public static T[] SubArray<T>(this T[] array, int index, int length)
         {
+            if (array == null) throw new ArgumentNullException(nameof(array));
+
             T[] result = new T[length];
             Array.Copy(array, index, result, 0, length);
             return result;
@@ -185,16 +192,6 @@ namespace CipherTool
             return copy;
         }
 
-        public static bool IsPrintable(this char ch)
-        {
-            return ch >= 32 && ch <= 126;
-        }
-
-        public static bool IsPrintable(this byte b)
-        {
-            return b >= 32 && b <= 126;
-        }
-
         public static bool IsPrintable(this byte[] array)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
@@ -209,6 +206,11 @@ namespace CipherTool
         public static string ToBase64String(this byte[] array)
         {
             return Convert.ToBase64String(array);
+        }
+
+        public static string ToBinaryString(this byte[] array, string sep = "")
+        {
+            return string.Join(sep, array.Select(b => b.ToBinaryString()));
         }
 
         public static byte[] Concat(this byte[] array1, byte[] array2)
@@ -236,22 +238,40 @@ namespace CipherTool
         }
     }
 
+    public static class CharByteExtension
+    {
+        public static bool IsPrintable(this char ch)
+        {
+            return ch >= 32 && ch <= 126;
+        }
+
+        public static bool IsPrintable(this byte b)
+        {
+            return b >= 32 && b <= 126;
+        }
+
+        public static string ToBinaryString(this byte b)
+        {
+            return Convert.ToString(b, 2).PadLeft(8, '0');
+        }
+    }
+
     public static class StringExtension
     {
         /// <summary>
         /// 将字符串中的每一个字符都转换成对应的byte，对于Unicode字符，默认使用UTF8编码
         /// </summary>
-        /// <param name="str"></param>
+        /// <param name="s"></param>
         /// <param name="encoding">Available value: ASCII, UTF8, UTF16, UTF32。</param>
         /// <returns></returns>
-        public static byte[] GetBytes(this string str, string? encoding = "UTF8")
+        public static byte[] GetBytes(this string s, string? encoding = "UTF8")
         {
             return encoding switch
             {
-                "UTF8" => Encoding.UTF8.GetBytes(str),
-                "ASCII" => Encoding.ASCII.GetBytes(str),
-                "UTF16" => Encoding.Unicode.GetBytes(str),
-                "UTF32" => Encoding.UTF32.GetBytes(str),
+                "UTF8" => Encoding.UTF8.GetBytes(s),
+                "ASCII" => Encoding.ASCII.GetBytes(s),
+                "UTF16" => Encoding.Unicode.GetBytes(s),
+                "UTF32" => Encoding.UTF32.GetBytes(s),
                 _ => throw new ArgumentException($"Unknown encoding {encoding}"),
             };
         }
@@ -259,13 +279,6 @@ namespace CipherTool
         public static string Repeat(this string str, int times)
         {
             return string.Concat(Enumerable.Repeat(str, times));
-        }
-
-        public static bool IgnoreCaseContains(this string str, string sub)
-        {
-            if (str == null) throw new ArgumentNullException(nameof(str));
-            if (sub == null) throw new ArgumentNullException(nameof(sub));
-            return str.Contains(sub, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

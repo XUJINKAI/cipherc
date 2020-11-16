@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using CipherTool.Exceptions;
 using CipherTool.Interpret;
+using CipherTool.Tokenizer;
 
 namespace CipherTool.AST
 {
@@ -66,11 +67,12 @@ namespace CipherTool.AST
     /// </summary>
     public class DataPrimary : DataNode
     {
-        public DataSource DataSource { get; }
+        [TokenTypeValidation(TokenType.DataSource)]
+        public TokenEnum DataSource { get; }
 
         public string InputText { get; }
 
-        public DataPrimary(DataSource source, string input)
+        public DataPrimary(TokenEnum source, string input)
         {
             DataSource = source;
             InputText = input;

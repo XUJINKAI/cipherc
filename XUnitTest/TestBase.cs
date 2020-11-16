@@ -40,7 +40,7 @@ namespace CipherTool.Test
 #endif
         }
 
-        protected void TestOutput(string arg, TestOutputDelegate assertFunc, Action<Context> contextAction = null)
+        protected void TestOutput(string arg, TestOutputDelegate assertFunc, Action<Context>? contextAction = null)
         {
             _testOutputHelper.WriteLine("Running command...");
             _testOutputHelper.WriteLine(arg);

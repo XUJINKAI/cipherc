@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Text;
-using CipherTool.Tokenizer;
+﻿using CipherTool.Tokenizer;
 
 namespace CipherTool.AST
 {
@@ -13,9 +9,10 @@ namespace CipherTool.AST
 
     public class PrintOperator : DataOperator
     {
-        public PrintFormat PrintFormat { get; }
+        [TokenTypeValidation(TokenType.PrintFormat)]
+        public TokenEnum PrintFormat { get; }
 
-        public PrintOperator(PrintFormat format)
+        public PrintOperator(TokenEnum format)
         {
             PrintFormat = format;
         }
@@ -23,9 +20,10 @@ namespace CipherTool.AST
 
     public class HashOperator : DataOperator
     {
-        public HashAlgr HashAlgr { get; set; }
+        [TokenTypeValidation(TokenType.Hash)]
+        public TokenEnum HashAlgr { get; set; }
 
-        public HashOperator(HashAlgr algr)
+        public HashOperator(TokenEnum algr)
         {
             HashAlgr = algr;
         }
@@ -33,9 +31,10 @@ namespace CipherTool.AST
 
     public class EncodeOperator : DataOperator
     {
-        public EncodeFormat EncodeFormat { get; set; }
+        [TokenTypeValidation(TokenType.EncodeFormat)]
+        public TokenEnum EncodeFormat { get; set; }
 
-        public EncodeOperator(EncodeFormat format)
+        public EncodeOperator(TokenEnum format)
         {
             EncodeFormat = format;
         }
@@ -43,9 +42,10 @@ namespace CipherTool.AST
 
     public class DecodeOperator : DataOperator
     {
-        public DecodeFormat DecodeFormat { get; set; }
+        [TokenTypeValidation(TokenType.DecodeFormat)]
+        public TokenEnum DecodeFormat { get; set; }
 
-        public DecodeOperator(DecodeFormat format)
+        public DecodeOperator(TokenEnum format)
         {
             DecodeFormat = format;
         }
