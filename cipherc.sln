@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F1E17CBB-F1E8-4B57-9213-F69DD23B3406}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.github\workflows\compile_test.yml = .github\workflows\compile_test.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
