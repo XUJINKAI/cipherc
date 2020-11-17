@@ -44,6 +44,8 @@ namespace CipherTool.Test.Utils
             Assert.Equal(data * times, Data.FromHexString(hex_times));
 
             AppendLine(hex_times);
+
+            Assert.False(true);
         }
     }
 }

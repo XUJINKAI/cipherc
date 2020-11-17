@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest]
     
     steps:
     - uses: actions/checkout@v2
@@ -21,4 +21,4 @@ jobs:
       with:
         dotnet-version: 5.0.100
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --verbosity normal
