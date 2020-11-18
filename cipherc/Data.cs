@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -46,6 +47,7 @@ namespace CipherTool
         #region Output
 
         public string ToAsciiString() => FromBytesToAsciiString(_bytes);
+        public string ToUtf8String() => FromBytesToUtf8String(_bytes);
         public string ToBase64String() => _bytes.ToBase64String();
         public string ToHexString(string sep = "") => _bytes.ToHexString(sep);
         public string ToBinaryString(string sep = "") => _bytes.ToBinaryString(sep);
@@ -144,11 +146,28 @@ namespace CipherTool
             return Encoding.ASCII.GetString(array);
         }
 
+        public static string FromBytesToUtf8String(byte[] array)
+        {
+            if (array == null) throw new ArgumentNullException(nameof(array));
+            return Encoding.UTF8.GetString(array);
+        }
+
         #endregion
     }
 
     public static class ArrayExtension
     {
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            foreach (T item in source)
+            {
+                action(item);
+            }
+        }
+
         public static T[] SubArray<T>(this T[] array, int index, int length)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));

@@ -1,8 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using CipherTool.Cli;
 using CipherTool.Interpret;
+using Xunit;
 using Xunit.Abstractions;
 using Random = CipherTool.Cipher.Random;
 
@@ -38,6 +39,46 @@ namespace CipherTool.Test
 #else
             throw new Exception($"MockConsoleIn function only work in Debug mode.");
 #endif
+        }
+
+        protected void TestCase(TestCase Input)
+        {
+            TestCase data = Input;
+
+            void TestAction()
+            {
+                TestOutput(data.Input, (lines, error) =>
+                {
+                    if (data.Output != null)
+                    {
+                        Assert.Equal(data.Output.Length + 1, lines.Length);
+                        for (int i = 0; i < data.Output.Length; i++)
+                        {
+                            Assert.Equal(data.Output[i], lines[i]);
+                        }
+                    }
+                    data.AssertAction?.Invoke(lines, error);
+                    if (data.ErrorMsgContains != null)
+                    {
+                        Assert.True(data.ErrorMsgContains.All(msg => error.Contains(msg)));
+                    }
+                }, ctx =>
+                {
+                    data.PreAction?.Invoke(ctx);
+                });
+            }
+
+            if (data.Exception != null)
+            {
+                Assert.Throws(data.Exception, () =>
+                {
+                    TestAction();
+                });
+            }
+            else
+            {
+                TestAction();
+            }
         }
 
         protected void TestOutput(string arg, TestOutputDelegate assertFunc, Action<Context>? contextAction = null)

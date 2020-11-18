@@ -8,7 +8,7 @@ namespace CipherTool.Utils
 {
     public static class Reflector
     {
-        public static T[] GetEnums<T>()
+        public static T[] GetEnumValues<T>()
         {
             return (T[])typeof(T).GetEnumValues();
         }

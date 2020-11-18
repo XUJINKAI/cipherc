@@ -54,7 +54,7 @@ Expression -> DataExpression
 
 DataExpression -> DataTerm { concat DataTerm }      // plus
 
-DataTerm -> DataFactor { repeat <N> }                // multiply
+DataTerm -> DataFactor { repeat <N> }               // multiply
 
 DataFactor -> PostfixData
 // 先计算前缀，再计算后缀
@@ -63,8 +63,8 @@ PostfixData -> PrefixData { DataOperator }
 PrefixData ->  { DataOperator } DataPrimary
 
 DataPrimary ->
-          DataSource <input>                // file <Path> | var <VAR> | rand <N-bytes>
-        | pipe                              // --> txt <pipeInputString>
+          DataSource <input>        // file <Path> | var <VAR> | rand <N-bytes>
+        | pipe                      // --> txt <pipeInputString>
 
 DataOperator ->
         | encode EncodeFormat
@@ -74,11 +74,11 @@ DataOperator ->
         | print PrintFormat
         | printf PrintFormat
 
-DataSource   -> txt | hex | base64 | file | var | rand
-PrintFormat  -> txt | hex | base64
-EncodeFormat -> txt | hex | base64 | url
-DecodeFormat -> txt | hex | base64 | url | pem
-HashOperator -> sm3 | md5 | sha1 | sha256
+DataSource   -> hex | bin | base64 | txt | file | var | rand // | pipe
+PrintFormat  -> hex | bin | base64 | txt
+EncodeFormat -> hex | bin | base64 | url
+DecodeFormat -> hex | bin | base64 | url | pem
+HashOperator -> sm3 | md5 | sha1 | sha256 | sha384 | sha512 | sha3
 
 // Statement
 

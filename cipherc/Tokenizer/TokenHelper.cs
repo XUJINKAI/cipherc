@@ -14,7 +14,7 @@ namespace CipherTool.Tokenizer
         private static IDictionary<string, TokenEnum> GetDefaultTokenMapper()
         {
             var tokenMapper = new Dictionary<string, TokenEnum>();
-            var tokens = Reflector.GetEnums<TokenEnum>();
+            var tokens = Reflector.GetEnumValues<TokenEnum>();
             foreach (var token in tokens)
             {
                 var tokenAttr = token.GetTokenDescriptionAttribute();
@@ -26,19 +26,19 @@ namespace CipherTool.Tokenizer
                     }
                     if (tokenAttr.Keywords.Count == 0)
                     {
-                        tokenMapper.Add(token.ToString().ToLower(ENV.CultureInfo), token);
+                        tokenMapper.Add(token.ToString().ToLower(), token);
                     }
                     else
                     {
                         foreach (var keyword in tokenAttr.Keywords)
                         {
-                            tokenMapper.Add(keyword.ToLower(ENV.CultureInfo), token);
+                            tokenMapper.Add(keyword.ToLower(), token);
                         }
                     }
                 }
                 else
                 {
-                    tokenMapper.Add(token.ToString().ToLower(ENV.CultureInfo), token);
+                    tokenMapper.Add(token.ToString().ToLower(), token);
                 }
             }
             return tokenMapper;
@@ -55,7 +55,7 @@ namespace CipherTool.Tokenizer
         public static TokenEnum GetTokenEnum(this Token token)
         {
             if (token == null) return TokenEnum.Null;
-            var key = token.Text.ToLower(ENV.CultureInfo);
+            var key = token.Text.ToLower();
             if (TokenHelper.TokenMapper.ContainsKey(key))
             {
                 return TokenHelper.TokenMapper[key];

@@ -13,6 +13,14 @@
         EncodeFormat,
         DecodeFormat,
 
+        /// <summary>
+        /// one Data input and one Data output
+        /// </summary>
+        DataFunction,
+
+        /// <summary>
+        /// one Data input, no output
+        /// </summary>
         DataAction,
 
         Hash,

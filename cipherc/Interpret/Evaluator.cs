@@ -9,6 +9,7 @@ using CipherTool.Cipher;
 using CipherTool.Cli;
 using CipherTool.Exceptions;
 using CipherTool.Tokenizer;
+using CipherTool.Utils;
 
 namespace CipherTool.Interpret
 {
@@ -101,7 +102,7 @@ namespace CipherTool.Interpret
                     {
                         TokenEnum.Base64 => data.ToBase64String(),
                         TokenEnum.Hex => data.ToHexString(),
-                        TokenEnum.Url => HttpUtility.UrlEncode(data),
+                        TokenEnum.Url => Converter.UrlEncode(data),
                         _ => throw new NotImplementedException(),
                     };
                 case DecodeOperator decodeOperator:
@@ -109,7 +110,7 @@ namespace CipherTool.Interpret
                     {
                         TokenEnum.Base64 => Data.FromBase64String(data.ToAsciiString()),
                         TokenEnum.Hex => Data.FromHexString(data.ToAsciiString()),
-                        TokenEnum.Url => HttpUtility.UrlDecodeToBytes(data.ToAsciiString()),
+                        TokenEnum.Url => Converter.UrlDecode(data.ToAsciiString()),
                         _ => throw new NotImplementedException(),
                     };
                 case SubOperator subOperator:
@@ -118,7 +119,7 @@ namespace CipherTool.Interpret
                     switch (printOperator.PrintFormat)
                     {
                         case TokenEnum.Txt:
-                            Context.WriteOutputLine(data.ToAsciiString());
+                            Context.WriteOutputLine(data.ToUtf8String());
                             break;
                         case TokenEnum.Hex:
                             Context.WriteOutputLine(data.ToHexString());
@@ -142,7 +143,7 @@ namespace CipherTool.Interpret
         {
             return (node.DataSource) switch
             {
-                (TokenEnum.Txt) => node.InputText,
+                (TokenEnum.Txt) => Data.FromUtf8String(node.InputText),
                 (TokenEnum.Hex) => Data.FromHexString(node.InputText),
                 (TokenEnum.Bin) => Data.FromBinaryString(node.InputText),
                 (TokenEnum.Base64) => Data.FromBase64String(node.InputText),

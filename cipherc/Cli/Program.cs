@@ -29,7 +29,7 @@ namespace CipherTool.Cli
             }
             else if (args.Length == 1)
             {
-                switch (args[0].ToLower(ENV.CultureInfo))
+                switch (args[0].ToLower())
                 {
                     case "shell":
                         IntoShell(interpreter);
@@ -60,7 +60,7 @@ namespace CipherTool.Cli
 
                 var lineArgs = NativeMethods.CommandLineToArgs(line);
                 if (lineArgs.Length == 0) { continue; }
-                if (lineArgs.Length == 1 && lineArgs[0].ToLower(ENV.CultureInfo) == "help")
+                if (lineArgs.Length == 1 && lineArgs[0].ToLower() == "help")
                 {
                     Console.WriteLine(HelpMenu.GetHelpText());
                     continue;

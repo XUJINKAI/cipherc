@@ -12,9 +12,10 @@ namespace CipherTool.Cli
         public static string GetHelpText()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Input format: {TokenType.DataSource.GetTokenEnumsString()}");
-            sb.AppendLine($"Encode format: {TokenType.EncodeFormat.GetTokenEnumsString()}");
-            sb.AppendLine($"Decode format: {TokenType.DecodeFormat.GetTokenEnumsString()}");
+            sb.AppendLine($"Input  format: {TokenType.DataSource.GetTokenEnumsString().ToLower()}");
+            sb.AppendLine($"Print  format: {TokenType.PrintFormat.GetTokenEnumsString().ToLower()}");
+            sb.AppendLine($"Encode format: {TokenType.EncodeFormat.GetTokenEnumsString().ToLower()}");
+            sb.AppendLine($"Decode format: {TokenType.DecodeFormat.GetTokenEnumsString().ToLower()}");
             sb.AppendLine($"Hash Algr: {TokenType.Hash.GetTokenEnumsString()}");
             return sb.ToString();
         }

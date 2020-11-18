@@ -44,9 +44,6 @@ namespace CipherTool.Test
 
         private static List<TestCase> ConstCases() => new List<TestCase>()
         {
-            // NonAscii
-            new TestCase($"hex 31323301FF print txt",  "123\x01?"),
-
             // DataSource
             new TestCase("file tmp", "31323334353637383930"){ PreAction = _ => File.WriteAllText("tmp", "1234567890") },
             new TestCase("var x", "31323334353637383930"){ PreAction = ctx => ctx.Variables.Add("x", "1234567890") },
@@ -90,114 +87,14 @@ namespace CipherTool.Test
         }
     }
 
-    public record TestCase
+    public class OtherTests : TestBase
     {
-        public string Input { get; }
-        public string[]? Output { get; }
-        public TestOutputDelegate? AssertAction { get; }
-
-        public Type? Exception { get; }
-        public string[]? ErrorMsgContains { get; }
-
-        public Action<IContext>? PreAction { get; init; }
-
-        #region functions
-        public TestCase(string _input, params string[] _output)
+        public OtherTests(ITestOutputHelper output) : base(output)
         {
-            Input = _input;
-            Output = _output.Length == 0 ? null : _output;
         }
-
-        public TestCase(string _input, TestOutputDelegate testOutputDelegate)
-        {
-            Input = _input;
-            AssertAction = testOutputDelegate;
-        }
-
-        public TestCase(string _input, Type _exception, params string[] _errorContains)
-        {
-            if (!_exception.IsAssignableTo(typeof(BaseException)))
-            {
-                throw new ArgumentException();
-            }
-            Input = _input;
-            Exception = _exception;
-            ErrorMsgContains = _errorContains.Length == 0 ? null : _errorContains;
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append($"'{Input}'");
-            if (Output != null)
-            {
-                sb.Append($", Output: '{string.Join(",", Output)}'");
-            }
-            if (AssertAction != null)
-            {
-                sb.Append(", AssertAction");
-            }
-            if (Exception != null)
-            {
-                sb.Append($", throw {Exception.Name}");
-            }
-            if (ErrorMsgContains != null)
-            {
-                sb.Append($", Errors: '{string.Join(",", ErrorMsgContains)}'");
-            }
-            if (PreAction != null)
-            {
-                sb.Append(", PreAction");
-            }
-            return sb.ToString();
-        }
-        #endregion
-    }
-
-    public class InOutTest : TestBase
-    {
-        public InOutTest(ITestOutputHelper output) : base(output) { }
 
         [Theory]
         [MemberData(nameof(InOutTestCases.GetTestCases), MemberType = typeof(InOutTestCases))]
-        public void Tests(TestCase Input)
-        {
-            TestCase data = Input;
-
-            void TestAction()
-            {
-                TestOutput(data.Input, (lines, error) =>
-                {
-                    if (data.Output != null)
-                    {
-                        Assert.Equal(data.Output.Length + 1, lines.Length);
-                        for (int i = 0; i < data.Output.Length; i++)
-                        {
-                            Assert.Equal(data.Output[i], lines[i]);
-                        }
-                    }
-                    data.AssertAction?.Invoke(lines, error);
-                    if (data.ErrorMsgContains != null)
-                    {
-                        Assert.True(data.ErrorMsgContains.All(msg => error.Contains(msg)));
-                    }
-                }, ctx =>
-                {
-                    data.PreAction?.Invoke(ctx);
-                });
-            }
-
-            if (data.Exception != null)
-            {
-                Assert.Throws(data.Exception, () =>
-                {
-                    TestAction();
-                });
-            }
-            else
-            {
-                TestAction();
-            }
-        }
+        public void Test(params TestCase[] array) => array.ForEach(c => TestCase(c));
     }
 }
