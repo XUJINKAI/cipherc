@@ -22,6 +22,10 @@ namespace CipherTool.Test
 
         public string Endline { get; } = "\n";
 
+        protected static TestOutputDelegate EmptyAssert => (lines, error) =>
+        {
+        };
+
         protected Data GetRandom(int bytes = 128)
         {
             return Random.RandomBytes(bytes);
@@ -83,9 +87,7 @@ namespace CipherTool.Test
 
         protected void TestOutput(string arg, TestOutputDelegate assertFunc, Action<Context>? contextAction = null)
         {
-            _testOutputHelper.WriteLine("Running command...");
-            _testOutputHelper.WriteLine(arg);
-            _testOutputHelper.WriteLine("");
+            _testOutputHelper.WriteLine("> " + arg);
 
             var outputStream = new MemoryStream();
             var errorStream = new MemoryStream();
@@ -116,18 +118,19 @@ namespace CipherTool.Test
             var output = new StreamReader(outputStream).ReadToEnd();
             var error = new StreamReader(errorStream).ReadToEnd();
 
-            _testOutputHelper.WriteLine("Output:");
             _testOutputHelper.WriteLine(output);
 
-            _testOutputHelper.WriteLine("Error:");
-            _testOutputHelper.WriteLine(error);
+            if (!string.IsNullOrEmpty(error))
+            {
+                _testOutputHelper.WriteLine(error);
+            }
 
             var lines = string.IsNullOrEmpty(output) ? Array.Empty<string>() : output.Split(Endline);
             assertFunc?.Invoke(lines, error);
 
             if (remExp != null)
             {
-                _testOutputHelper.WriteLine($"{remExp.Message}{Endline}{remExp.StackTrace}");
+                _testOutputHelper.WriteLine($"StackTrace:{Endline}{remExp.StackTrace}");
                 throw remExp;
             }
         }

@@ -6,6 +6,7 @@ namespace CipherTool.Tokenizer
     {
         [TokenDescription(T.Null)] Null,
         [TokenDescription(T.Null)] Unknown,
+        [TokenDescription(T.Null, Description = "Auto dectect data format, print hex or txt.")] AutoPrint,
 
         [TokenDescription(T.Command, "help")] Help,
         [TokenDescription(T.Command, "vars")] Variables,

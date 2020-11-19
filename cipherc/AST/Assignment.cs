@@ -17,5 +17,11 @@ namespace CipherTool.AST
             VarName = name;
             Data = data;
         }
+
+        public override void Accept([NotNull] IVisitor visitor)
+        {
+            visitor.Visit(this);
+            Data.Accept(visitor);
+        }
     }
 }

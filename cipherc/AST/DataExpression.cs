@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
+using CipherTool.AST.Validations;
 using CipherTool.Exceptions;
 using CipherTool.Interpret;
 using CipherTool.Tokenizer;
@@ -10,7 +12,7 @@ namespace CipherTool.AST
 {
     public abstract class DataNode : Node
     {
-
+        public virtual TokenEnum DefaultPrintFormat { get; } = TokenEnum.AutoPrint;
     }
 
     /// <summary>
@@ -25,6 +27,13 @@ namespace CipherTool.AST
         {
             Left = left;
             Right = right;
+        }
+
+        public override void Accept([NotNull] IVisitor visitor)
+        {
+            visitor.Visit(this);
+            Left.Accept(visitor);
+            Right.Accept(visitor);
         }
     }
 
@@ -42,6 +51,12 @@ namespace CipherTool.AST
             DataFactor = node;
             RepeatTimes = repeatTimes;
         }
+
+        public override void Accept([NotNull] IVisitor visitor)
+        {
+            visitor.Visit(this);
+            DataFactor.Accept(visitor);
+        }
     }
 
     /// <summary>
@@ -55,10 +70,24 @@ namespace CipherTool.AST
 
         public DataOperator Operator { get; }
 
+        public override TokenEnum DefaultPrintFormat => Operator switch
+        {
+            EncodeOperator => TokenEnum.Txt,
+            DecodeOperator => TokenEnum.AutoPrint,
+            _ => Data.DefaultPrintFormat,
+        };
+
         public DataFactor(DataNode node, DataOperator op)
         {
             Data = node;
             Operator = op;
+        }
+
+        public override void Accept([NotNull] IVisitor visitor)
+        {
+            visitor.Visit(this);
+            Data.Accept(visitor);
+            Operator.Accept(visitor);
         }
     }
 
@@ -77,6 +106,11 @@ namespace CipherTool.AST
             DataSource = source;
             InputText = input;
         }
+
+        public override void Accept([NotNull] IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 
     public class RandDataPrimary : DataNode
@@ -87,10 +121,18 @@ namespace CipherTool.AST
         {
             RandBytes = nRandBytes;
         }
+
+        public override void Accept([NotNull] IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 
     public class PipeDataPrimary : DataNode
     {
-
+        public override void Accept([NotNull] IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

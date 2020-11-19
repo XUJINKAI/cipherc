@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 using System.Web;
+using CipherTool.Exceptions;
 
 namespace CipherTool.Utils
 {

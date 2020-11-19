@@ -1,4 +1,6 @@
-﻿using CipherTool.Tokenizer;
+﻿using System.Diagnostics.CodeAnalysis;
+using CipherTool.AST.Validations;
+using CipherTool.Tokenizer;
 
 namespace CipherTool.AST
 {
@@ -16,6 +18,8 @@ namespace CipherTool.AST
         {
             PrintFormat = format;
         }
+
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
     }
 
     public class HashOperator : DataOperator
@@ -27,6 +31,8 @@ namespace CipherTool.AST
         {
             HashAlgr = algr;
         }
+
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
     }
 
     public class EncodeOperator : DataOperator
@@ -38,6 +44,8 @@ namespace CipherTool.AST
         {
             EncodeFormat = format;
         }
+
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
     }
 
     public class DecodeOperator : DataOperator
@@ -49,6 +57,8 @@ namespace CipherTool.AST
         {
             DecodeFormat = format;
         }
+
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
     }
 
     public class SubOperator : DataOperator
@@ -62,5 +72,7 @@ namespace CipherTool.AST
             Start = start;
             Length = length;
         }
+
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
     }
 }

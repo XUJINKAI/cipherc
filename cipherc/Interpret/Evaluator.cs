@@ -38,6 +38,59 @@ namespace CipherTool.Interpret
             context.WriteOutputLine(result);
         }
 
+        private void WriteFormatData(TokenEnum format, Data data)
+        {
+            switch (format)
+            {
+                case TokenEnum.Txt:
+                    Context.WriteOutputLine(data.ToUtf8String());
+                    break;
+                case TokenEnum.Hex:
+                    Context.WriteOutputLine(data.ToHexString());
+                    break;
+                case TokenEnum.Bin:
+                    Context.WriteOutputLine(data.ToBinaryString());
+                    break;
+                case TokenEnum.Base64:
+                    Context.WriteOutputLine(data.ToBase64String());
+                    break;
+                case TokenEnum.AutoPrint:
+                    const int TXT_TH = 80;
+                    const int LENGTH_TH = 8;
+                    const int HEX_TH = TXT_TH / 2;
+                    const int BIN_TH = TXT_TH / 8;
+                    const int B64_TH = TXT_TH / 4 * 3;
+                    const int HASH_TH = 8;
+
+                    if (data.Length > LENGTH_TH)
+                        Context.WriteOutputLine("LENGTH: " + data.Length.ToString());
+
+                    Context.WriteOutputLine("HEX:    " + (data.Length > HEX_TH ? data.Sub(0, HEX_TH).ToHexString() + "..." : data.ToHexString()));
+
+                    if (data.Length < BIN_TH)
+                        Context.WriteOutputLine("BIN:    " + data.ToBinaryString());
+
+                    if (data.Length < TXT_TH)
+                    {
+                        if (data.IsPrintable())
+                            Context.WriteOutputLine("ASCII:  " + data.ToAsciiString());
+                        Context.WriteOutputLine("UTF8:   " + data.ToUtf8String());
+                    }
+
+                    if (data.Length < B64_TH)
+                        Context.WriteOutputLine("BASE64: " + data.ToBase64String());
+
+                    if (data.Length > HASH_TH)
+                    {
+                        Context.WriteOutputLine("MD5:    " + Hash.MD5(data).ToHexString());
+                        Context.WriteOutputLine("SM3:    " + Hash.SM3(data).ToHexString());
+                    }
+                    break;
+                default:
+                    throw new ArgumentException($"Parameter format should be PrintFormat.", nameof(format));
+            }
+        }
+
         public void Visit(Node node)
         {
             Contract.Assume(node != null);
@@ -56,7 +109,11 @@ namespace CipherTool.Interpret
                     WriteVariablesList(Context);
                     return;
                 case DataNode dataNode:
-                    Evaluate(dataNode);
+                    var data = Evaluate(dataNode);
+                    if (!(dataNode is DataFactor dataFactor && dataFactor.Operator is PrintOperator))
+                    {
+                        WriteFormatData(dataNode.DefaultPrintFormat, data);
+                    }
                     return;
                 case Assignment assignment:
                     Context.Variables[assignment.VarName] = Evaluate(assignment.Data);
@@ -102,6 +159,7 @@ namespace CipherTool.Interpret
                     {
                         TokenEnum.Base64 => data.ToBase64String(),
                         TokenEnum.Hex => data.ToHexString(),
+                        TokenEnum.Bin => data.ToBinaryString(),
                         TokenEnum.Url => Converter.UrlEncode(data),
                         _ => throw new NotImplementedException(),
                     };
@@ -110,29 +168,14 @@ namespace CipherTool.Interpret
                     {
                         TokenEnum.Base64 => Data.FromBase64String(data.ToAsciiString()),
                         TokenEnum.Hex => Data.FromHexString(data.ToAsciiString()),
+                        TokenEnum.Bin => Data.FromBinaryString(data.ToAsciiString()),
                         TokenEnum.Url => Converter.UrlDecode(data.ToAsciiString()),
                         _ => throw new NotImplementedException(),
                     };
                 case SubOperator subOperator:
                     return data.Sub(subOperator.Start, subOperator.Length);
                 case PrintOperator printOperator:
-                    switch (printOperator.PrintFormat)
-                    {
-                        case TokenEnum.Txt:
-                            Context.WriteOutputLine(data.ToUtf8String());
-                            break;
-                        case TokenEnum.Hex:
-                            Context.WriteOutputLine(data.ToHexString());
-                            break;
-                        case TokenEnum.Bin:
-                            Context.WriteOutputLine(data.ToBinaryString());
-                            break;
-                        case TokenEnum.Base64:
-                            Context.WriteOutputLine(data.ToBase64String());
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                    WriteFormatData(printOperator.PrintFormat, data);
                     return data;
                 default:
                     throw new NotImplementedException();

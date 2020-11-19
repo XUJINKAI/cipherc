@@ -58,11 +58,7 @@ namespace CipherTool.Interpret
             }
             // Expression
             var exp = Expression();
-            return exp switch
-            {
-                DataFactor factor when factor.Operator is PrintOperator => exp,
-                _ => new DataFactor(exp, Context.GetDefaultPrintOperator()),
-            };
+            return exp;
         }
 
         private DataNode Expression()

@@ -30,8 +30,27 @@ namespace CipherTool.Interpret
             {
                 var parser = new Parser(Context, tokens);
                 var ast = parser.BuildAst();
+
+                var validator = new NodeValidator();
+                ast.Accept(validator);
+                if (validator.ValidationResults.Count > 0)
+                {
+                    throw new ValidationException(validator.ValidationResults);
+                }
+
                 var evaluator = new Evaluator(Context);
-                ast.Accept(evaluator);
+                evaluator.Visit(ast);
+            }
+            catch (ValidationException validationException)
+            {
+                Context.WriteErrorLine("Parser Error.");
+                validationException.ValidationResults.ForEach(r => Context.WriteErrorLine(r.ErrorMessage ?? "unknown error"));
+                if (Context.ThrowOnException) throw;
+            }
+            catch (DecodeException decodeException)
+            {
+                Context.WriteErrorLine(decodeException.Message);
+                if (Context.ThrowOnException) throw;
             }
             catch (UnexpectedTokenException unexpectedTokenException)
             {

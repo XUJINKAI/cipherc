@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CipherTool.Exceptions;
 
 #pragma warning disable CA2225 // 运算符重载具有命名的备用项
 
@@ -102,14 +103,20 @@ namespace CipherTool
         public static byte[] FromHexStringToByteArray(string hexStr)
         {
             if (hexStr == null) throw new ArgumentNullException(nameof(hexStr));
-            if (hexStr.Length % 2 != 0)
-                throw new ArgumentException($"HexString's length must be even. Value: [{hexStr.Length}] {hexStr}.");
+            if (hexStr.Length % 2 != 0) hexStr = "0" + hexStr;
 
-            int numberChars = hexStr.Length;
-            byte[] bytes = new byte[numberChars / 2];
-            for (int i = 0; i < numberChars; i += 2)
-                bytes[i / 2] = Convert.ToByte(hexStr.Substring(i, 2), 16);
-            return bytes;
+            try
+            {
+                int numberChars = hexStr.Length;
+                byte[] bytes = new byte[numberChars / 2];
+                for (int i = 0; i < numberChars; i += 2)
+                    bytes[i / 2] = Convert.ToByte(hexStr.Substring(i, 2), 16);
+                return bytes;
+            }
+            catch (FormatException exp)
+            {
+                throw new DecodeException("hex", hexStr, exp);
+            }
         }
 
         /// <summary>
@@ -121,19 +128,33 @@ namespace CipherTool
         {
             if (binStr == null) throw new ArgumentNullException(nameof(binStr));
 
-            var input = binStr.PadLeft((binStr.Length + 7) / 8 * 8, '0');
-            int numOfBytes = input.Length / 8;
-            byte[] bytes = new byte[numOfBytes];
-            for (int i = 0; i < numOfBytes; ++i)
+            try
             {
-                bytes[i] = Convert.ToByte(input.Substring(8 * i, 8), 2);
+                var input = binStr.PadLeft((binStr.Length + 7) / 8 * 8, '0');
+                int numOfBytes = input.Length / 8;
+                byte[] bytes = new byte[numOfBytes];
+                for (int i = 0; i < numOfBytes; ++i)
+                {
+                    bytes[i] = Convert.ToByte(input.Substring(8 * i, 8), 2);
+                }
+                return bytes;
             }
-            return bytes;
+            catch (FormatException exp)
+            {
+                throw new DecodeException("binary", binStr, exp);
+            }
         }
 
         public static byte[] FromBase64StringToByteArray(string base64Str)
         {
-            return Convert.FromBase64String(base64Str);
+            try
+            {
+                return Convert.FromBase64String(base64Str);
+            }
+            catch (FormatException exp)
+            {
+                throw new DecodeException("base64", base64Str, exp);
+            }
         }
 
         /// <summary>

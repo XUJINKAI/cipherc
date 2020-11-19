@@ -33,12 +33,20 @@ namespace CipherTool.Test.Cases
             foreach (var (txt, base64) in Txt_Base64_Datas)
                 yield return new object[] {
                     new TestCase($"txt {txt} print base64", base64),
+                    new TestCase($"txt {txt} encode base64", base64),
+                    new TestCase($"txt {txt} encode base64 print txt", base64),
+
                     new TestCase($"base64 {base64} print txt", txt),
+                    new TestCase($"txt {base64} decode base64 print txt", txt),
                 };
             foreach (var (hex, base64) in Hex_Base64_Datas)
                 yield return new object[] {
                     new TestCase($"hex {hex} print base64", base64),
+                    new TestCase($"hex {hex} encode base64", base64),
+                    new TestCase($"hex {hex} encode base64 print txt", base64),
+
                     new TestCase($"base64 {base64} print hex", hex),
+                    new TestCase($"txt {base64} decode base64 print hex", hex),
                 };
         }
 
@@ -62,7 +70,11 @@ namespace CipherTool.Test.Cases
             foreach (var (hex, bin) in Hex_Bin_Datas)
                 yield return new object[] {
                     new TestCase($"hex {hex} print bin", bin),
+                    new TestCase($"hex {hex} encode bin", bin),
+                    new TestCase($"hex {hex} encode bin print txt", bin),
+
                     new TestCase($"bin {bin} print hex", hex),
+                    new TestCase($"txt {bin} decode bin print hex", hex),
                 };
         }
 
@@ -83,7 +95,9 @@ namespace CipherTool.Test.Cases
         {
             foreach (var (str, url) in Url_Datas)
                 yield return new object[] {
+                    new TestCase($"txt \"{str}\" encode url", url),
                     new TestCase($"txt \"{str}\" encode url print txt", url),
+
                     new TestCase($"txt \"{url}\" decode url print txt", str),
                 };
         }

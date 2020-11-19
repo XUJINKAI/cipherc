@@ -1,13 +1,9 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace CipherTool.AST
 {
     public abstract class Node
     {
-        public virtual void Accept(IVisitor visitor)
-        {
-            Contract.Assume(visitor != null);
-            visitor.Visit(this);
-        }
+        public abstract void Accept([NotNull] IVisitor visitor);
     }
 }

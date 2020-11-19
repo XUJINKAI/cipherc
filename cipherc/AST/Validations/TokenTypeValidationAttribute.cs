@@ -1,12 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Reflection;
-using CipherTool.Utils;
+using CipherTool.Tokenizer;
 
-namespace CipherTool.Tokenizer
+namespace CipherTool.AST.Validations
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class TokenTypeValidationAttribute : ValidationAttribute
@@ -33,7 +31,7 @@ namespace CipherTool.Tokenizer
             }
             else
             {
-                return new ValidationResult($"Property {ctx.DisplayName} must be {ValidType} TokenType.");
+                return new ValidationResult($"Valid {ctx.DisplayName} values: {ValidType.GetTokenEnumsString()}");
             }
         }
     }
