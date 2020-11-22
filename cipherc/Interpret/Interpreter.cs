@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 using CipherTool.Cli;
 using CipherTool.Exceptions;
@@ -23,23 +24,33 @@ namespace CipherTool.Interpret
             Interpret(args);
         }
 
-        public void Interpret(string[] args)
+        private void _interpret(string[] args)
         {
             var tokens = new TokenStream(args);
+            var parser = new Parser(Context, tokens);
+            var ast = parser.BuildAst();
+
+            var validator = new NodeValidator();
+            ast.Accept(validator);
+            if (validator.ValidationResults.Count > 0)
+            {
+                throw new ValidationException(validator.ValidationResults);
+            }
+
+            var evaluator = new Evaluator(Context);
+            evaluator.Visit(ast);
+        }
+
+        public void Interpret(string[] args)
+        {
+#if false
+            _interpret(args);
+            return;
+#endif
+
             try
             {
-                var parser = new Parser(Context, tokens);
-                var ast = parser.BuildAst();
-
-                var validator = new NodeValidator();
-                ast.Accept(validator);
-                if (validator.ValidationResults.Count > 0)
-                {
-                    throw new ValidationException(validator.ValidationResults);
-                }
-
-                var evaluator = new Evaluator(Context);
-                evaluator.Visit(ast);
+                _interpret(args);
             }
             catch (ValidationException validationException)
             {

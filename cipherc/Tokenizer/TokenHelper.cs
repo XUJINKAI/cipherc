@@ -24,7 +24,7 @@ namespace CipherTool.Tokenizer
                     {
                         continue;
                     }
-                    if (tokenAttr.Keywords.Count == 0)
+                    if (tokenAttr.Keywords.Length == 0)
                     {
                         tokenMapper.Add(token.ToString().ToLower(), token);
                     }
@@ -76,7 +76,7 @@ namespace CipherTool.Tokenizer
             return EnumValue.GetCustomAttribute<TokenDescriptionAttribute>();
         }
 
-        public static IReadOnlyCollection<TokenType> GetTokenTypes(this TokenEnum tokenEnum)
+        public static IList<TokenType> GetTokenTypes(this TokenEnum tokenEnum)
         {
             var attr = tokenEnum.GetTokenDescriptionAttribute();
             return attr != null ? attr.Types : new List<TokenType>();
@@ -94,13 +94,6 @@ namespace CipherTool.Tokenizer
         {
             var values = (TokenEnum[])typeof(TokenEnum).GetEnumValues();
             return values.Where(@enum => @enum.GetTokenTypes().Contains(tokenType)).ToList();
-        }
-
-        public static string GetTokenEnumsString(this TokenType tokenType)
-        {
-            var values = (TokenEnum[])typeof(TokenEnum).GetEnumValues();
-            var enums = values.Where(@enum => @enum.GetTokenTypes().Contains(tokenType)).ToList();
-            return string.Join(", ", enums);
         }
     }
 }

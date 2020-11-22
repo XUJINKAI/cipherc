@@ -13,7 +13,7 @@ dotnet_diagnostic.CA1805.severity = suggestion
 dotnet_diagnostic.CA1031.severity = suggestion
 
 # CA1032: 实现标准异常构造函数
-dotnet_diagnostic.CA1032.severity = suggestion
+dotnet_diagnostic.CA1032.severity = silent
 
 # CA1304: 指定 CultureInfo
 dotnet_diagnostic.CA1304.severity = silent

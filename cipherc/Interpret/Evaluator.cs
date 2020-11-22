@@ -26,25 +26,21 @@ namespace CipherTool.Interpret
         public static void WriteVariablesList(IContext context)
         {
             Contract.Assume(context != null);
-            var Variables = context.Variables;
-            var EndOfLine = context.EndOfLine;
 
-            if (Variables.Count == 0)
+            const int TH = 80;
+            foreach (var (key, value) in context.Variables)
             {
-                return;
+                if (value.Length > TH)
+                    context.WriteOutputLine($"{key} = {value.Sub(0, TH / 2).ToHexString()}...");
+                else
+                    context.WriteOutputLine($"{key} = {value.ToHexString()}");
             }
-
-            var result = string.Join(EndOfLine, Variables.Select(item => $"{item.Key} = {item.Value.ToHexString()}"));
-            context.WriteOutputLine(result);
         }
 
-        private void WriteFormatData(TokenEnum format, Data data)
+        private void WriteFormatData(TokenEnum format, Data data, bool formatReadable)
         {
             switch (format)
             {
-                case TokenEnum.Txt:
-                    Context.WriteOutputLine(data.ToUtf8String());
-                    break;
                 case TokenEnum.Hex:
                     Context.WriteOutputLine(data.ToHexString());
                     break;
@@ -54,27 +50,35 @@ namespace CipherTool.Interpret
                 case TokenEnum.Base64:
                     Context.WriteOutputLine(data.ToBase64String());
                     break;
+                case TokenEnum.Url:
+                    Context.WriteOutputLine(Converter.UrlEncode(data));
+                    break;
+                case TokenEnum.Txt:
+                    Context.WriteOutputLine(data.ToUtf8String());
+                    break;
+                case TokenEnum.Ascii:
+                    Context.WriteOutputLine(data.ToAsciiString());
+                    break;
                 case TokenEnum.AutoPrint:
                     const int TXT_TH = 80;
                     const int LENGTH_TH = 8;
                     const int HEX_TH = TXT_TH / 2;
-                    const int BIN_TH = TXT_TH / 8;
                     const int B64_TH = TXT_TH / 4 * 3;
                     const int HASH_TH = 8;
+
+                    Context.WriteOutputLine("---");
 
                     if (data.Length > LENGTH_TH)
                         Context.WriteOutputLine("LENGTH: " + data.Length.ToString());
 
                     Context.WriteOutputLine("HEX:    " + (data.Length > HEX_TH ? data.Sub(0, HEX_TH).ToHexString() + "..." : data.ToHexString()));
 
-                    if (data.Length < BIN_TH)
-                        Context.WriteOutputLine("BIN:    " + data.ToBinaryString());
-
                     if (data.Length < TXT_TH)
                     {
                         if (data.IsPrintable())
                             Context.WriteOutputLine("ASCII:  " + data.ToAsciiString());
-                        Context.WriteOutputLine("UTF8:   " + data.ToUtf8String());
+                        else
+                            Context.WriteOutputLine("UTF8:   " + data.ToUtf8String());
                     }
 
                     if (data.Length < B64_TH)
@@ -85,6 +89,8 @@ namespace CipherTool.Interpret
                         Context.WriteOutputLine("MD5:    " + Hash.MD5(data).ToHexString());
                         Context.WriteOutputLine("SM3:    " + Hash.SM3(data).ToHexString());
                     }
+
+                    Context.WriteOutputLine("---");
                     break;
                 default:
                     throw new ArgumentException($"Parameter format should be PrintFormat.", nameof(format));
@@ -102,21 +108,21 @@ namespace CipherTool.Interpret
                         Visit(sentence);
                     }
                     return;
-                case HelpStatement:
-                    Context.WriteOutputLine(HelpMenu.GetHelpText());
-                    return;
-                case VariablesListStatement:
-                    WriteVariablesList(Context);
-                    return;
                 case DataNode dataNode:
                     var data = Evaluate(dataNode);
                     if (!(dataNode is DataFactor dataFactor && dataFactor.Operator is PrintOperator))
                     {
-                        WriteFormatData(dataNode.DefaultPrintFormat, data);
+                        WriteFormatData(dataNode.DefaultPrintFormat, data, false);
                     }
                     return;
                 case Assignment assignment:
                     Context.Variables[assignment.VarName] = Evaluate(assignment.Data);
+                    return;
+                case VariablesListStatement:
+                    WriteVariablesList(Context);
+                    return;
+                case HelpStatement:
+                    Context.WriteOutputLine(HelpText.GetFullHelpText());
                     return;
                 default:
                     throw new UnknownNodeTypeException(node.GetType());
@@ -128,12 +134,11 @@ namespace CipherTool.Interpret
             return node switch
             {
                 DataConcator dataConcator => Evaluate(dataConcator.Left).Concat(Evaluate(dataConcator.Right)),
-                DataRepeator dataRepeator => Evaluate(dataRepeator.DataFactor).Repeat(dataRepeator.RepeatTimes),
                 DataFactor dataFactor => Evaluate(dataFactor),
-                DataPrimary dataPrimary => Evaluate(dataPrimary),
+                TextDataPrimary dataPrimary => Evaluate(dataPrimary),
                 RandDataPrimary randDataPrimary => Evaluate(randDataPrimary),
                 PipeDataPrimary pipeDataPrimary => Evaluate(pipeDataPrimary),
-                _ => throw new Exception(),
+                _ => throw new EvaluateException(nameof(DataNode)),
             };
         }
 
@@ -142,6 +147,24 @@ namespace CipherTool.Interpret
             var data = Evaluate(factor.Data);
             switch (factor.Operator)
             {
+                case EncodeOperator encodeOperator:
+                    return encodeOperator.EncodeFormat switch
+                    {
+                        TokenEnum.Hex => data.ToHexString(),
+                        TokenEnum.Bin => data.ToBinaryString(),
+                        TokenEnum.Base64 => data.ToBase64String(),
+                        TokenEnum.Url => Converter.UrlEncode(data),
+                        _ => throw new EvaluateException(nameof(DataFactor)),
+                    };
+                case DecodeOperator decodeOperator:
+                    return decodeOperator.DecodeFormat switch
+                    {
+                        TokenEnum.Hex => Data.FromHexString(data.ToAsciiString()),
+                        TokenEnum.Bin => Data.FromBinaryString(data.ToAsciiString()),
+                        TokenEnum.Base64 => Data.FromBase64String(data.ToAsciiString()),
+                        TokenEnum.Url => Converter.UrlDecode(data.ToAsciiString()),
+                        _ => throw new EvaluateException(nameof(DataFactor)),
+                    };
                 case HashOperator hashOperator:
                     return hashOperator.HashAlgr switch
                     {
@@ -152,47 +175,45 @@ namespace CipherTool.Interpret
                         TokenEnum.Sha384 => Hash.SHA384(data),
                         TokenEnum.Sha512 => Hash.SHA512(data),
                         TokenEnum.Sha3 => Hash.SHA3(data),
-                        _ => throw new NotImplementedException(),
+                        _ => throw new EvaluateException(nameof(DataFactor)),
                     };
-                case EncodeOperator encodeOperator:
-                    return encodeOperator.EncodeFormat switch
-                    {
-                        TokenEnum.Base64 => data.ToBase64String(),
-                        TokenEnum.Hex => data.ToHexString(),
-                        TokenEnum.Bin => data.ToBinaryString(),
-                        TokenEnum.Url => Converter.UrlEncode(data),
-                        _ => throw new NotImplementedException(),
-                    };
-                case DecodeOperator decodeOperator:
-                    return decodeOperator.DecodeFormat switch
-                    {
-                        TokenEnum.Base64 => Data.FromBase64String(data.ToAsciiString()),
-                        TokenEnum.Hex => Data.FromHexString(data.ToAsciiString()),
-                        TokenEnum.Bin => Data.FromBinaryString(data.ToAsciiString()),
-                        TokenEnum.Url => Converter.UrlDecode(data.ToAsciiString()),
-                        _ => throw new NotImplementedException(),
-                    };
+                case RepeatOperator repeatOperator:
+                    return data.Repeat(repeatOperator.Times);
                 case SubOperator subOperator:
                     return data.Sub(subOperator.Start, subOperator.Length);
                 case PrintOperator printOperator:
-                    WriteFormatData(printOperator.PrintFormat, data);
+                    WriteFormatData(printOperator.PrintFormat, data, printOperator.PrintReadable);
+                    return data;
+                case SaveOperator saveOperator:
+                    switch (saveOperator.DestType)
+                    {
+                        case TokenEnum.File:
+                            File.WriteAllBytes(saveOperator.DestText, data);
+                            break;
+                        case TokenEnum.Var:
+                            Context.Variables[saveOperator.DestText] = data;
+                            break;
+                        default:
+                            throw new EvaluateException(nameof(DataFactor));
+                    }
                     return data;
                 default:
-                    throw new NotImplementedException();
+                    throw new EvaluateException(nameof(DataFactor));
             }
         }
 
-        private Data Evaluate(DataPrimary node)
+        private Data Evaluate(TextDataPrimary node)
         {
             return (node.DataSource) switch
             {
-                (TokenEnum.Txt) => Data.FromUtf8String(node.InputText),
                 (TokenEnum.Hex) => Data.FromHexString(node.InputText),
                 (TokenEnum.Bin) => Data.FromBinaryString(node.InputText),
                 (TokenEnum.Base64) => Data.FromBase64String(node.InputText),
-                (TokenEnum.File) => File.ReadAllBytes(node.InputText),
+                (TokenEnum.Url) => Converter.UrlDecode(node.InputText),
+                (TokenEnum.Txt) => Data.FromUtf8String(node.InputText),
                 (TokenEnum.Var) => Context.Variables[node.InputText],
-                _ => throw new Exception(),
+                (TokenEnum.File) => File.ReadAllBytes(node.InputText),
+                _ => throw new EvaluateException(nameof(TextDataPrimary)),
             };
         }
 
@@ -201,9 +222,18 @@ namespace CipherTool.Interpret
             return Cipher.Random.RandomBytes(node.RandBytes);
         }
 
-        private Data Evaluate(PipeDataPrimary _)
+        private Data Evaluate(PipeDataPrimary node)
         {
-            return ConsoleHelper.GetPipeAllTextIn();
+            var pipeIn = ConsoleHelper.GetPipeAllTextIn();
+            switch (node.PipeFormat)
+            {
+                case TokenEnum.Txt:
+                    return pipeIn;
+                case TokenEnum.File:
+                    return File.ReadAllBytes(pipeIn);
+                default:
+                    throw new EvaluateException(nameof(PipeDataPrimary));
+            }
         }
 
     }

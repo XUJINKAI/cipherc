@@ -26,17 +26,17 @@ namespace CipherTool.Test.Cases
             new TestCase("unknown token", typeof(UnexpectedTokenException), UnexpectedTokenException.KeyFragment),
             new TestCase("hex 1234 repeat x", typeof(UnexpectedTokenException), UnexpectedTokenException.KeyFragment),
             new TestCase("rand x", typeof(UnexpectedTokenException), UnexpectedTokenException.KeyFragment),
-            new TestCase("print hex pipe", typeof(NoPipeInputException), NoPipeInputException.KeyFragment) { PreAction = _ => ConsoleHelper.MockConsoleInput(null) },
+            new TestCase("print hex pipe txt", typeof(NoPipeInputException), NoPipeInputException.KeyFragment) { PreAction = _ => ConsoleHelper.MockConsoleInput(null) },
         };
 
-        private static IEnumerable<object[]> GeTestCases()
+        private static IEnumerable<object[]> TestCases()
         {
             foreach (var c in Datas)
                 yield return new object[] { c };
         }
 
         [Theory]
-        [MemberData(nameof(GeTestCases))]
+        [MemberData(nameof(TestCases))]
         public void Test(params TestCase[] array) => array.ForEach(c => TestCase(c));
     }
 }

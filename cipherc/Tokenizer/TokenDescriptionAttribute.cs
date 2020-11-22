@@ -7,34 +7,26 @@ namespace CipherTool.Tokenizer
     [AttributeUsage(AttributeTargets.Field)]
     public class TokenDescriptionAttribute : Attribute
     {
-        public IReadOnlyCollection<string> Keywords { get; }
+        public string[] Keywords { get; set; }
 
-        public string Description { get; set; } = "";
-
-        public IReadOnlyCollection<TokenType> Types { get; set; }
-
-        public TokenDescriptionAttribute(TokenType tokenType)
+        /// <summary>
+        /// set single Keywords
+        /// </summary>
+        public string Alias
         {
-            Types = new List<TokenType>(new TokenType[] { tokenType });
-            Keywords = new List<string>();
+            get => throw new NotImplementedException();
+            set => Keywords = new string[] { value };
         }
 
-        public TokenDescriptionAttribute(TokenType tokenType, params string[] keywords)
-        {
-            Types = new List<TokenType>(new TokenType[] { tokenType });
-            Keywords = new List<string>(keywords);
-        }
+        public IList<TokenType> Types { get; set; }
 
-        public TokenDescriptionAttribute(params TokenType[] tokenTypes)
+        public TokenDescriptionAttribute(TokenType firstType, params TokenType[] tokenTypes)
         {
-            Keywords = new List<string>();
-            Types = new List<TokenType>(tokenTypes);
-        }
-
-        public TokenDescriptionAttribute(string keyword, params TokenType[] tokenTypes)
-        {
-            Keywords = new List<string>(new string[] { keyword });
-            Types = new List<TokenType>(tokenTypes);
+            Keywords = Array.Empty<string>();
+            Types = new List<TokenType>(tokenTypes)
+            {
+                firstType
+            };
         }
     }
 }

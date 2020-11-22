@@ -14,22 +14,28 @@ namespace CipherTool.AST
         [TokenTypeValidation(TokenType.PrintFormat)]
         public TokenEnum PrintFormat { get; }
 
-        public PrintOperator(TokenEnum format)
+        public bool PrintReadable { get; }
+
+        public PrintOperator(TokenEnum format, bool readable)
         {
             PrintFormat = format;
+            PrintReadable = readable;
         }
 
         public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
     }
 
-    public class HashOperator : DataOperator
+    public class SaveOperator : DataOperator
     {
-        [TokenTypeValidation(TokenType.Hash)]
-        public TokenEnum HashAlgr { get; set; }
+        [TokenTypeValidation(TokenType.DataDestination)]
+        public TokenEnum DestType { get; }
 
-        public HashOperator(TokenEnum algr)
+        public string DestText { get; }
+
+        public SaveOperator(TokenEnum type, string text)
         {
-            HashAlgr = algr;
+            DestType = type;
+            DestText = text;
         }
 
         public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
@@ -56,6 +62,31 @@ namespace CipherTool.AST
         public DecodeOperator(TokenEnum format)
         {
             DecodeFormat = format;
+        }
+
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
+    }
+
+    public class HashOperator : DataOperator
+    {
+        [TokenTypeValidation(TokenType.Hash)]
+        public TokenEnum HashAlgr { get; set; }
+
+        public HashOperator(TokenEnum algr)
+        {
+            HashAlgr = algr;
+        }
+
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
+    }
+
+    public class RepeatOperator : DataOperator
+    {
+        public int Times { get; set; }
+
+        public RepeatOperator(int n)
+        {
+            Times = n;
         }
 
         public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);

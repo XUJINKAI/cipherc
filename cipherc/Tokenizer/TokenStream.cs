@@ -13,6 +13,7 @@ namespace CipherTool.Tokenizer
     {
         private int _index;
         private readonly IList<Token> _tokens;
+        public int Count => _tokens.Count;
 
         public void Reset() => _index = -1;
         private bool IsValidIndex(int index) => index >= 0 && index < _tokens.Count;
@@ -49,6 +50,15 @@ namespace CipherTool.Tokenizer
         public TokenEnum ReadTokenEnum()
         {
             var token = Read();
+            var t = token.GetTokenEnum();
+            if (t == TokenEnum.Unknown)
+                throw new UnexpectedTokenException(token);
+            return t;
+        }
+
+        public TokenEnum ReadTokenEnum(out Token token)
+        {
+            token = Read();
             var t = token.GetTokenEnum();
             if (t == TokenEnum.Unknown)
                 throw new UnexpectedTokenException(token);
@@ -113,6 +123,11 @@ namespace CipherTool.Tokenizer
 
         // Accept
 
+        /// <summary>
+        /// true if next token is predicate, else false
+        /// </summary>
+        /// <param name="tokenEnum"></param>
+        /// <returns></returns>
         public bool Accept(TokenEnum tokenEnum)
         {
             if (Peek(tokenEnum))
@@ -125,15 +140,5 @@ namespace CipherTool.Tokenizer
                 return false;
             }
         }
-
-        public bool Expect(TokenEnum keyword)
-        {
-            Token token = Read();
-            if (token.IsMatch(keyword))
-                return true;
-            else
-                throw new UnexpectedTokenException(token, $"Expected token: {keyword}, got {token.Text}");
-        }
-
     }
 }

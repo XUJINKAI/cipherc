@@ -9,6 +9,7 @@
         Grammar,
 
         DataSource,
+        DataDestination,
         PrintFormat,
         EncodeFormat,
         DecodeFormat,
@@ -23,6 +24,9 @@
         /// </summary>
         DataAction,
 
+        /// <summary>
+        /// implicit DataFunction
+        /// </summary>
         Hash,
         Asym,
         Sym,

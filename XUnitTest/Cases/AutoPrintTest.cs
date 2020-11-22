@@ -18,9 +18,7 @@ namespace CipherTool.Test.Cases
         {
             Assert.True(lines.All(l => l.Length < 100));
             Assert.Contains(lines, l => l.StartsWith("HEX"));
-            Assert.Contains(lines, l => l.StartsWith("BIN"));
             Assert.Contains(lines, l => l.StartsWith("ASCII"));
-            Assert.Contains(lines, l => l.StartsWith("UTF8"));
             Assert.Contains(lines, l => l.StartsWith("BASE64"));
         };
 
@@ -39,14 +37,14 @@ namespace CipherTool.Test.Cases
             new TestCase("txt "+"1234567890".Repeat(8), TestVeryLongData),
         };
 
-        private static IEnumerable<object[]> GeTestCases()
+        private static IEnumerable<object[]> TestCases()
         {
             foreach (var c in Datas)
                 yield return new object[] { c };
         }
 
         [Theory]
-        [MemberData(nameof(GeTestCases))]
+        [MemberData(nameof(TestCases))]
         public void Test(params TestCase[] array) => array.ForEach(c => TestCase(c));
     }
 }

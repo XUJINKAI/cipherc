@@ -10,14 +10,14 @@ namespace CipherTool.Test.Cases
         {
         }
 
-        // base64
+        // base64/hex/txt
 
         private static List<(string txt, string base64)> Txt_Base64_Datas => new List<(string, string)>()
         {
             ("1234567890", "MTIzNDU2Nzg5MA=="),
         };
 
-        private static List<(string txt, string base64)> Hex_Base64_Datas => new List<(string, string)>()
+        private static List<(string hex, string base64)> Hex_Base64_Datas => new List<(string, string)>()
         {
             ("00", "AA=="),
             ("0000", "AAA="),
@@ -28,7 +28,7 @@ namespace CipherTool.Test.Cases
             ("FFEF", "/+8="),
         };
 
-        private static IEnumerable<object[]> GetBase64TestCases()
+        private static IEnumerable<object[]> Base64_TestCases()
         {
             foreach (var (txt, base64) in Txt_Base64_Datas)
                 yield return new object[] {
@@ -51,7 +51,7 @@ namespace CipherTool.Test.Cases
         }
 
         [Theory]
-        [MemberData(nameof(GetBase64TestCases))]
+        [MemberData(nameof(Base64_TestCases))]
         public void Base64Test(params TestCase[] array) => array.ForEach(c => TestCase(c));
 
         // hex/bin
@@ -65,7 +65,7 @@ namespace CipherTool.Test.Cases
             ("0141E1B8CAFFD199", "0000000101000001111000011011100011001010111111111101000110011001"),
         };
 
-        private static IEnumerable<object[]> GetHexBinTestCases()
+        private static IEnumerable<object[]> HexBin_TestCases()
         {
             foreach (var (hex, bin) in Hex_Bin_Datas)
                 yield return new object[] {
@@ -79,31 +79,46 @@ namespace CipherTool.Test.Cases
         }
 
         [Theory]
-        [MemberData(nameof(GetHexBinTestCases))]
+        [MemberData(nameof(HexBin_TestCases))]
         public void HexBinTest(params TestCase[] array) => array.ForEach(c => TestCase(c));
 
-        // url
+        // url/hex/txt
 
-        private static List<(string str, string url)> Url_Datas => new List<(string, string)>()
+        private static List<(string str, string url)> Txt_Url_Datas => new List<(string, string)>()
         {
             ("ABCD1234abcd-", "ABCD1234abcd-"),
             ("ABCD!@#$%^&*()-=_+ abcd", "ABCD!%40%23%24%25%5E%26*()-%3D_%2B+abcd"),
             ("ABCD中文测试 空格  abcd", "ABCD%E4%B8%AD%E6%96%87%E6%B5%8B%E8%AF%95+%E7%A9%BA%E6%A0%BC++abcd"),
         };
 
-        private static IEnumerable<object[]> GeUrlTestCases()
+        private static List<(string hex, string url)> Hex_Url_Datas => new List<(string, string)>()
         {
-            foreach (var (str, url) in Url_Datas)
+            ("ABCD1290DEFF", "%AB%CD%12%90%DE%FF"),
+        };
+
+        private static IEnumerable<object[]> Url_TestCases()
+        {
+            foreach (var (str, url) in Txt_Url_Datas)
                 yield return new object[] {
+                    new TestCase($"txt \"{str}\" print url", url),
                     new TestCase($"txt \"{str}\" encode url", url),
                     new TestCase($"txt \"{str}\" encode url print txt", url),
 
                     new TestCase($"txt \"{url}\" decode url print txt", str),
                 };
+            foreach (var (hex, url) in Hex_Url_Datas)
+                yield return new object[]
+                {
+                    new TestCase($"hex {hex} print url", url),
+                    new TestCase($"hex {hex} encode url", url),
+                    new TestCase($"hex {hex} encode url print txt", url),
+
+                    new TestCase($"txt \"{url}\" decode url print hex", hex),
+                };
         }
 
         [Theory]
-        [MemberData(nameof(GeUrlTestCases))]
+        [MemberData(nameof(Url_TestCases))]
         public void UrlTest(params TestCase[] array) => array.ForEach(c => TestCase(c));
     }
 }

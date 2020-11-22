@@ -46,36 +46,38 @@ cipherc sm3 \
 
 ```c
 Block -> Sentence { then Sentence }
-Sentence -> Expression | Statement | Declaration
+Sentence ->   DataExpression
+            | var <VAR> is DataExpression
+            | vars
+            | help
 
 // Expression
 
-Expression -> DataExpression
+DataExpression -> DataFactor { concat DataFactor }      // +
 
-DataExpression -> DataTerm { concat DataTerm }      // plus
-
-DataTerm -> DataFactor { repeat <N> }               // multiply
-
-DataFactor -> PostfixData
-// 先计算前缀，再计算后缀
+// 对DataPrimary附加DataOperator运算
+// 先向前计算，再向后计算
+DataFactor ->  PostfixData
 PostfixData -> PrefixData { DataOperator }
-
-PrefixData ->  { DataOperator } DataPrimary
-
-DataPrimary ->
-          DataSource <input>        // file <Path> | var <VAR> | rand <N-bytes>
-        | pipe                      // --> txt <pipeInputString>
+PrefixData ->  DataOperator PrefixData | DataPrimary
 
 DataOperator ->
         | encode EncodeFormat
         | decode DecodeFormat
-        | sub <Nstart> <Nlength>
         | HashOperator
-        | print PrintFormat
-        | printf PrintFormat
+        | repeat <times>            // *
+        | sub <Nstart> <Nlength>
+        | print PrintFormat         // contains no space
+        | printf PrintFormat        // print readable
+        | to file <Path>
+        | to var <VAR>
 
-DataSource   -> hex | bin | base64 | txt | file | var | rand // | pipe
-PrintFormat  -> hex | bin | base64 | txt
+DataPrimary -> hex <HEX> | bin <BIN> | base64 <BASE64> | url <URL>
+            | txt <UTF8> | var <VAR> | rand <N-bytes> | file <PATH>
+            | pipe txt          // pipe input is text
+            | pipe file         // pipe input is file path
+
+PrintFormat  -> hex | bin | base64 | url | txt | ascii | auto
 EncodeFormat -> hex | bin | base64 | url
 DecodeFormat -> hex | bin | base64 | url | pem
 HashOperator -> sm3 | md5 | sha1 | sha256 | sha384 | sha512 | sha3
@@ -96,15 +98,4 @@ Sym  -> sm4 | aes
 Pack -> x509 | p10
 Object -> Asym | Sym | Pack
 ObjectAction -> enc | dec | sign | check
-
-// Declaration
-
-Declaration -> Assignment | FuncDeclaration
-
-Assignment ->
-          var <ID> is DataExpression
-        | obj <ID> is Object
-
-FuncDeclaration -> ε
-
 ```

@@ -26,7 +26,7 @@ namespace CipherTool.Test
         {
         };
 
-        protected Data GetRandom(int bytes = 128)
+        protected static Data GetRandom(int bytes = 128)
         {
             return Random.RandomBytes(bytes);
         }

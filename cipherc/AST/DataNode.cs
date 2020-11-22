@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 using CipherTool.AST.Validations;
-using CipherTool.Exceptions;
-using CipherTool.Interpret;
 using CipherTool.Tokenizer;
 
 namespace CipherTool.AST
 {
     public abstract class DataNode : Node
     {
-        public virtual TokenEnum DefaultPrintFormat { get; } = TokenEnum.AutoPrint;
+        public virtual TokenEnum DefaultPrintFormat { get; set; } = TokenEnum.AutoPrint;
     }
 
-    /// <summary>
-    /// DataConcator -> DataRepeator { concat DataRepeator }
-    /// </summary>
     public class DataConcator : DataNode
     {
         public DataNode Left { get; }
@@ -37,33 +28,6 @@ namespace CipherTool.AST
         }
     }
 
-    /// <summary>
-    /// DataRepeator -> DataFactor { times <N> }
-    /// </summary>
-    public class DataRepeator : DataNode
-    {
-        public DataNode DataFactor { get; set; }
-
-        public int RepeatTimes { get; }
-
-        public DataRepeator(DataNode node, int repeatTimes)
-        {
-            DataFactor = node;
-            RepeatTimes = repeatTimes;
-        }
-
-        public override void Accept([NotNull] IVisitor visitor)
-        {
-            visitor.Visit(this);
-            DataFactor.Accept(visitor);
-        }
-    }
-
-    /// <summary>
-    /// DataFactor -> PostfixData
-    /// PostfixData -> PrefixData { DataOperator | print PrintFormat }
-    /// PrefixData ->  { DataOperator } DataPrimary
-    /// </summary>
     public class DataFactor : DataNode
     {
         public DataNode Data { get; }
@@ -74,6 +38,7 @@ namespace CipherTool.AST
         {
             EncodeOperator => TokenEnum.Txt,
             DecodeOperator => TokenEnum.AutoPrint,
+            HashOperator => TokenEnum.Hex,
             _ => Data.DefaultPrintFormat,
         };
 
@@ -91,26 +56,22 @@ namespace CipherTool.AST
         }
     }
 
-    /// <summary>
-    /// DataPrimary -> [ txt | hex | base64 | file | var ] InputText | rand <NUM> | pipe
-    /// </summary>
-    public class DataPrimary : DataNode
+    // DataPrimary
+
+    public class TextDataPrimary : DataNode
     {
         [TokenTypeValidation(TokenType.DataSource)]
         public TokenEnum DataSource { get; }
 
         public string InputText { get; }
 
-        public DataPrimary(TokenEnum source, string input)
+        public TextDataPrimary(TokenEnum source, string input)
         {
             DataSource = source;
             InputText = input;
         }
 
-        public override void Accept([NotNull] IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
     }
 
     public class RandDataPrimary : DataNode
@@ -122,17 +83,18 @@ namespace CipherTool.AST
             RandBytes = nRandBytes;
         }
 
-        public override void Accept([NotNull] IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
     }
 
     public class PipeDataPrimary : DataNode
     {
-        public override void Accept([NotNull] IVisitor visitor)
+        public TokenEnum PipeFormat { get; }
+
+        public PipeDataPrimary(TokenEnum format)
         {
-            visitor.Visit(this);
+            PipeFormat = format;
         }
+
+        public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
     }
 }

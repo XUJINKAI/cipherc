@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using CipherTool.Cli;
 using CipherTool.Tokenizer;
 
 namespace CipherTool.AST.Validations
@@ -31,7 +32,7 @@ namespace CipherTool.AST.Validations
             }
             else
             {
-                return new ValidationResult($"Valid {ctx.DisplayName} values: {ValidType.GetTokenEnumsString()}");
+                return new ValidationResult($"Valid {ctx.DisplayName} values: {HelpText.GetTokenKeywordsString(ValidType)}");
             }
         }
     }

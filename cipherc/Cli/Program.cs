@@ -24,7 +24,7 @@ namespace CipherTool.Cli
                 }
                 else
                 {
-                    Console.WriteLine(HelpMenu.GetHelpText());
+                    Console.WriteLine(HelpText.GetCliHelpText());
                 }
             }
             else if (args.Length == 1)
@@ -35,9 +35,11 @@ namespace CipherTool.Cli
                         IntoShell(interpreter);
                         break;
                     case "-h":
+                    case "--version":
+                        Console.WriteLine(HelpText.GetCliHelpText());
+                        break;
                     case "--help":
-                    case "help":
-                        Console.WriteLine(HelpMenu.GetHelpText());
+                        Console.WriteLine(HelpText.GetFullHelpText());
                         break;
                     default:
                         RunCmdArgs(interpreter, args);
@@ -52,6 +54,7 @@ namespace CipherTool.Cli
 
         static void IntoShell(Interpreter interpreter)
         {
+            Console.WriteLine(HelpText.GetShellWhecomeText());
             do
             {
                 Console.Write("> ");
@@ -62,7 +65,7 @@ namespace CipherTool.Cli
                 if (lineArgs.Length == 0) { continue; }
                 if (lineArgs.Length == 1 && lineArgs[0].ToLower() == "help")
                 {
-                    Console.WriteLine(HelpMenu.GetHelpText());
+                    Console.WriteLine(HelpText.GetFullHelpText());
                     continue;
                 }
                 RunCmdArgs(interpreter, lineArgs);

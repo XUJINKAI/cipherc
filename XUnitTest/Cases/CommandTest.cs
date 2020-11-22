@@ -11,9 +11,9 @@ using Xunit.Abstractions;
 
 namespace CipherTool.Test.Cases
 {
-    public class GrammarParserTest : TestBase
+    public class CommandTest : TestBase
     {
-        public GrammarParserTest(ITestOutputHelper output) : base(output)
+        public CommandTest(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -28,17 +28,21 @@ namespace CipherTool.Test.Cases
                 ctx.Variables.Add("b", Data.FromHexString("123456"));
                 ctx.Variables.Add("a234567890", Data.FromHexString("123456ABCDEF"));
             }},
-            new TestCase("pipe", EmptyAssert){ PreAction = _ => ConsoleHelper.MockConsoleInput("1234567890") },
+            new TestCase("vars", (lines,error) => Assert.True(lines.All(l => l.Length < 100))) { PreAction = ctx =>
+            {
+                ctx.Variables.Add("a", Data.FromHexString("ABCD"));
+                ctx.Variables.Add("very_long", "abcdefg".Repeat(100));
+            }},
         };
 
-        private static IEnumerable<object[]> GeTestCases()
+        private static IEnumerable<object[]> TestCases()
         {
             foreach (var c in Datas)
                 yield return new object[] { c };
         }
 
         [Theory]
-        [MemberData(nameof(GeTestCases))]
+        [MemberData(nameof(TestCases))]
         public void Test(params TestCase[] array) => array.ForEach(c => TestCase(c));
     }
 }

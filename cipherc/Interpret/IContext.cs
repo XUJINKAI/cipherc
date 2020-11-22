@@ -9,12 +9,12 @@ namespace CipherTool.Interpret
 
         public string EndOfLine { get; }
 
+        bool GuessInputType { get; }
+
         bool ThrowOnException { get; }
 
         void WriteOutputLine(string line);
 
         void WriteErrorLine(string line);
-
-        PrintOperator GetDefaultPrintOperator();
     }
 }

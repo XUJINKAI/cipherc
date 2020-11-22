@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using CipherTool.AST;
 using CipherTool.Exceptions;
 using CipherTool.Tokenizer;
@@ -22,6 +23,7 @@ namespace CipherTool.Interpret
         public Node BuildAst()
         {
             Tokens.Reset();
+            Tokens.Accept(TokenEnum.ApplicationName);
             return Block();
         }
 
@@ -38,14 +40,15 @@ namespace CipherTool.Interpret
 
         private Node Sentence()
         {
-            switch (Tokens.PeekToken()?.GetTokenEnum())
+            // vars
+            if (Tokens.Accept(TokenEnum.Variables))
             {
-                case TokenEnum.Variables:
-                    Tokens.Read();
-                    return new VariablesListStatement();
-                case TokenEnum.Help:
-                    Tokens.Read();
-                    return new HelpStatement();
+                return new VariablesListStatement();
+            }
+            // help
+            if (Tokens.Accept(TokenEnum.Help))
+            {
+                return new HelpStatement();
             }
             // Assignment
             if (Tokens.Peek(TokenEnum.Var) && Tokens.Peek(3, TokenEnum.AssignSymbol))
@@ -53,39 +56,26 @@ namespace CipherTool.Interpret
                 Tokens.Read(); // var
                 var name = Tokens.ReadText();
                 Tokens.Read(); // is
-                var data = Expression();
+                var data = DataExpression();
                 return new Assignment(name, data);
             }
             // Expression
-            var exp = Expression();
-            return exp;
-        }
-
-        private DataNode Expression()
-        {
             return DataExpression();
         }
 
         private DataNode DataExpression()
         {
-            var result = DataTerm();
+            var result = DataFactor();
             while (Tokens.Accept(TokenEnum.ConcatData))
             {
-                result = new DataConcator(result, DataTerm());
+                result = new DataConcator(result, DataFactor());
             }
-
             return result;
         }
 
-        private DataNode DataTerm()
+        private DataNode DataFactor()
         {
-            DataNode result = PostfixData();
-            while (Tokens.Accept(TokenEnum.DuplicateData))
-            {
-                result = new DataRepeator(result, Tokens.ReadInt());
-            }
-
-            return result;
+            return PostfixData();
         }
 
         private DataNode PostfixData()
@@ -115,24 +105,33 @@ namespace CipherTool.Interpret
 
         private bool PeekDataOperator()
         {
-            return Tokens.Peek(TokenEnum.Encode, TokenEnum.Decode, TokenEnum.Sub, TokenEnum.Print)
-                   || Tokens.Peek(TokenType.Hash);
+            return Tokens.Peek(TokenType.DataFunction) || Tokens.Peek(TokenType.Hash);
         }
 
         private DataOperator DataOperator()
         {
-            var token = Tokens.Read();
-            var @enum = token.GetTokenEnum();
+            var @enum = Tokens.ReadTokenEnum(out var token1);
             switch (@enum)
             {
                 case TokenEnum.Encode:
                     return new EncodeOperator(Tokens.ReadTokenEnum(TokenType.EncodeFormat));
                 case TokenEnum.Decode:
                     return new DecodeOperator(Tokens.ReadTokenEnum(TokenType.DecodeFormat));
+                case TokenEnum.DuplicateData:
+                    return new RepeatOperator(Tokens.ReadInt());
                 case TokenEnum.Sub:
                     return new SubOperator(Tokens.ReadInt(), Tokens.ReadInt());
                 case TokenEnum.Print:
-                    return new PrintOperator(Tokens.ReadTokenEnum(TokenType.PrintFormat));
+                    return new PrintOperator(Tokens.ReadTokenEnum(TokenType.PrintFormat), false);
+                case TokenEnum.PrintReadable:
+                    return new PrintOperator(Tokens.ReadTokenEnum(TokenType.PrintFormat), true);
+                case TokenEnum.SaveData:
+                    return Tokens.ReadTokenEnum(out var token2) switch
+                    {
+                        TokenEnum.File => new SaveOperator(TokenEnum.File, Tokens.ReadText()),
+                        TokenEnum.Var => new SaveOperator(TokenEnum.Var, Tokens.ReadText()),
+                        _ => throw new UnexpectedTokenException(token2),
+                    };
             }
 
             if (@enum.IsMatchTokenType(TokenType.Hash))
@@ -141,18 +140,42 @@ namespace CipherTool.Interpret
             }
             else
             {
-                throw new UnexpectedTokenException(token);
+                throw new UnexpectedTokenException(token1);
             }
         }
 
         private DataNode DataPrimary()
         {
+            var peekToken = Tokens.PeekToken();
+            if (peekToken == null) throw new ExpectedMoreTokenException();
+
+            if (Context.GuessInputType && peekToken.GetTokenEnum() == TokenEnum.Unknown)
+            {
+                var input = peekToken.Text;
+                if (File.Exists(input))
+                {
+                    Tokens.Read();
+                    return new TextDataPrimary(TokenEnum.File, input);
+                }
+                if (input.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                    || input.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                {
+                    Tokens.Read();
+                    return new TextDataPrimary(TokenEnum.Url, input) { DefaultPrintFormat = TokenEnum.Txt };
+                }
+            }
+
             var source = Tokens.ReadTokenEnum(TokenType.DataSource);
             return source switch
             {
-                TokenEnum.Pipe => new PipeDataPrimary(),
+                TokenEnum.Pipe => Tokens.ReadTokenEnum(out var pipeToken) switch
+                {
+                    TokenEnum.Txt => new PipeDataPrimary(TokenEnum.Txt),
+                    TokenEnum.File => new PipeDataPrimary(TokenEnum.File),
+                    _ => throw new UnexpectedTokenException(pipeToken),
+                },
                 TokenEnum.Rand => new RandDataPrimary(Tokens.ReadInt()),
-                _ => new DataPrimary(source, Tokens.ReadText()),
+                _ => new TextDataPrimary(source, Tokens.ReadText()),
             };
         }
     }
