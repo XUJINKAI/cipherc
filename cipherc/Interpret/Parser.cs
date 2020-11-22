@@ -23,7 +23,6 @@ namespace CipherTool.Interpret
         public Node BuildAst()
         {
             Tokens.Reset();
-            Tokens.Accept(TokenEnum.ApplicationName);
             return Block();
         }
 
@@ -35,7 +34,10 @@ namespace CipherTool.Interpret
             {
                 block.AddNode(Sentence());
             }
-            return block.Sentences.Count == 1 ? block.Sentences[0] : block;
+            if (Tokens.IsEnd)
+                return block.Sentences.Count == 1 ? block.Sentences[0] : block;
+            else
+                throw new UnexpectedTokenException(Tokens.PeekToken() ?? throw new Exception("[Parser] Tokens.IsEnd == false, but Tokens.PeekToken() == null."));
         }
 
         private Node Sentence()

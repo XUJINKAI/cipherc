@@ -14,6 +14,7 @@ namespace CipherTool.Tokenizer
         private int _index;
         private readonly IList<Token> _tokens;
         public int Count => _tokens.Count;
+        public bool IsEnd => _index == _tokens.Count - 1;
 
         public void Reset() => _index = -1;
         private bool IsValidIndex(int index) => index >= 0 && index < _tokens.Count;

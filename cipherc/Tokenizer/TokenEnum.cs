@@ -10,11 +10,6 @@ namespace CipherTool.Tokenizer
         [TokenDescription(T.Null)] Null = 0,
         [TokenDescription(T.Null)] Unknown,
 
-        /// <summary>
-        /// To skip first word (app name) in shell mode
-        /// </summary>
-        [TokenDescription(T.Grammar, Alias = "cipherc")] ApplicationName,
-
         [TokenDescription(T.Command)] Help,
         [TokenDescription(T.Command, Alias = "vars")] Variables,
 

@@ -1,4 +1,4 @@
-﻿# cipherc [WIP]
+﻿# cipherc
 
 An english-like bytes data process/cipher DSL.
 
@@ -6,40 +6,19 @@ e.g.
 
 ```bash
 # transform data format
-cipherc hex 61626364 print base64
+> hex 61626364 print base64
 
-# hash data
-cipherc sm3 txt "to be hash" print hex
+# hash data multiple times
+> txt "WelcomeCipherc" sm3 md5 sha1
 
-# output random 32bit
-cipherc rand 32 print hex
+# hash multiple times and print intermediate result
+> txt "WelcomeCipherc" sm3 print hex sm3 print hex
 
-# generate sm2 key pair then sign data
-cipherc sm2 gen \
-    sign from txt data "secret content" \
-        to hex data
+# store random data in variable x, then store it's sm3 hash in variable hash_x
+> var x is rand 32 then var hash_x is var x sm3
 
-# sm4 enc and dec data
-cipherc sm4 \
-    set key from bin file "1.key" \
-    set iv from hex data "000000" \
-    enc ecb from txt data "abcdef" \
-        to var enc_result \
-    dec ecb from var enc_result \
-        to base64 data
-
-# variable and multiple expression
-cipherc \
-    sm2 set key from hex data "123456" \
-        get pk to var x \
-    then \
-    sm3 from var x
-
-# recursive expression
-cipherc sm3 \
-    sm2 \
-        set key from hex data "123456" \
-        get pk to out
+# use command vars to list all variables
+> vars
 ```
 
 ## Grammar
@@ -82,11 +61,7 @@ EncodeFormat -> hex | bin | base64 | url
 DecodeFormat -> hex | bin | base64 | url | pem
 HashOperator -> sm3 | md5 | sha1 | sha256 | sha384 | sha512 | sha3
 
-// Statement
-
-Statement ->
-          ObjectSentence
-        | print PrintFormat DataExpression
+// WIP...
 
 ObjectSentence ->
         | Object get <KEY>
