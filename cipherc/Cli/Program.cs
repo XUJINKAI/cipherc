@@ -1,4 +1,5 @@
 ﻿using System;
+using CipherTool.Cipher;
 using CipherTool.Interpret;
 
 namespace CipherTool.Cli
@@ -18,14 +19,7 @@ namespace CipherTool.Cli
             var interpreter = new Interpreter(ctx);
             if (args.Length == 0)
             {
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                {
-                    IntoShell(interpreter);
-                }
-                else
-                {
-                    Console.WriteLine(HelpText.GetCliHelpText());
-                }
+                IntoShell(interpreter);
             }
             else if (args.Length == 1)
             {
@@ -35,6 +29,7 @@ namespace CipherTool.Cli
                         IntoShell(interpreter);
                         break;
                     case "-h":
+                    case "-v":
                     case "--version":
                         Console.WriteLine(HelpText.GetCliHelpText());
                         break;
@@ -55,10 +50,10 @@ namespace CipherTool.Cli
         static void IntoShell(Interpreter interpreter)
         {
             Console.WriteLine(HelpText.GetShellWhecomeText());
+            ReadLine.HistoryEnabled = true;
             do
             {
-                Console.Write("> ");
-                var line = Console.ReadLine();
+                var line = ReadLine.Read("> ");
                 if (line == null) continue;
 
                 var lineArgs = NativeMethods.CommandLineToArgs(line);

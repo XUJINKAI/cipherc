@@ -20,14 +20,14 @@
         DataFunction,
 
         /// <summary>
-        /// one Data input, no output
-        /// </summary>
-        DataAction,
-
-        /// <summary>
         /// implicit DataFunction
         /// </summary>
         Hash,
+
+        /// <summary>
+        /// has multiple properties and functions
+        /// </summary>
+        Object,
         Asym,
         Sym,
     }

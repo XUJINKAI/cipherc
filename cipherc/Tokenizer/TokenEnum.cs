@@ -50,9 +50,6 @@ namespace CipherTool.Tokenizer
         [TokenDescription(T.Hash)] Sha512,
         [TokenDescription(T.Hash)] Sha3,
 
-        /// <summary>
-        /// Print all support hash result
-        /// </summary>
-        [TokenDescription(T.DataAction, Alias = "hash")] PrintSupportedHashAction,
+        [TokenDescription(T.Object)] X509,
     }
 }

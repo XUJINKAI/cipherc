@@ -165,6 +165,16 @@ namespace CipherTool.Interpret
                     Tokens.Read();
                     return new TextDataPrimary(TokenEnum.Url, input) { DefaultPrintFormat = TokenEnum.Txt };
                 }
+                if (input.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                {
+                    Tokens.Read();
+                    return new TextDataPrimary(TokenEnum.Hex, input.Substring(2));
+                }
+                if (input.StartsWith("0b", StringComparison.OrdinalIgnoreCase))
+                {
+                    Tokens.Read();
+                    return new TextDataPrimary(TokenEnum.Bin, input.Substring(2));
+                }
             }
 
             var source = Tokens.ReadTokenEnum(TokenType.DataSource);

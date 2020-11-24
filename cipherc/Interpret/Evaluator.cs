@@ -42,13 +42,22 @@ namespace CipherTool.Interpret
             switch (format)
             {
                 case TokenEnum.Hex:
-                    Context.WriteOutputLine(data.ToHexString());
+                    var hex = data.ToHexString();
+                    Context.WriteOutputLine(formatReadable
+                        ? hex.SplitBySize(32).Select(l => l.SplitBySize(2).JoinToString(" ")).JoinToString(Context.EndOfLine)
+                        : hex);
                     break;
                 case TokenEnum.Bin:
-                    Context.WriteOutputLine(data.ToBinaryString());
+                    var bin = data.ToBinaryString();
+                    Context.WriteOutputLine(formatReadable
+                        ? bin.SplitBySize(64).Select(l => l.SplitBySize(8).JoinToString(" ")).JoinToString(Context.EndOfLine)
+                        : bin);
                     break;
                 case TokenEnum.Base64:
-                    Context.WriteOutputLine(data.ToBase64String());
+                    var base64 = data.ToBase64String();
+                    Context.WriteOutputLine(formatReadable
+                        ? base64.SplitBySize(64).JoinToString(Context.EndOfLine)
+                        : base64);
                     break;
                 case TokenEnum.Url:
                     Context.WriteOutputLine(Converter.UrlEncode(data));

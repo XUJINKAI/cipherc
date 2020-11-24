@@ -320,5 +320,16 @@ namespace CipherTool
         {
             return string.Concat(Enumerable.Repeat(str, times));
         }
+
+        public static IEnumerable<string> SplitBySize(this string s, int maxChunkSize)
+        {
+            for (int i = 0; i < s.Length; i += maxChunkSize)
+                yield return s.Substring(i, Math.Min(maxChunkSize, s.Length - i));
+        }
+    }
+
+    public static class StringArrayExtension
+    {
+        public static string JoinToString(this IEnumerable<string> array, string seperator) => string.Join(seperator, array);
     }
 }

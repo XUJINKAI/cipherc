@@ -8,7 +8,8 @@ namespace CipherTool.Cli
         public static string GetCliHelpText()
         {
             return $@"
-Use 'cipherc help' for full help.
+Use 'cipherc help' to show help.
+Use 'cipherc shell' to REPL shell.
 Use 'cipherc <COMMAND>' to run command.
 
 e.g. cipherc hex 57656C636F6D6520746F206369706865726321 print txt
