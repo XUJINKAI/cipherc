@@ -176,7 +176,7 @@ namespace CipherTool
         #endregion
     }
 
-    public static class ArrayExtension
+    public static class IEnumerableExtension
     {
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
@@ -187,6 +187,15 @@ namespace CipherTool
             {
                 action(item);
             }
+        }
+    }
+
+    public static class ArrayExtension
+    {
+        public static IEnumerable<T[]> SplitBySize<T>(this T[] array, int maxChunkSize)
+        {
+            for (int i = 0; i < array.Length; i += maxChunkSize)
+                yield return array.SubArray(i, Math.Min(maxChunkSize, array.Length - i));
         }
 
         public static T[] SubArray<T>(this T[] array, int index, int length)
@@ -224,6 +233,11 @@ namespace CipherTool
 
     public static class ByteArrayExtension
     {
+        public static Data GetData(this byte[] array)
+        {
+            return Data.FromBytes(array);
+        }
+
         public static byte[]? DeepCopy(this byte[]? array)
         {
             if (array == null) return null;

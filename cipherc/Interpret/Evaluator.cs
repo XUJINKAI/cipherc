@@ -37,27 +37,42 @@ namespace CipherTool.Interpret
             }
         }
 
-        private void WriteFormatData(TokenEnum format, Data data, bool formatReadable)
+        private void WriteFormatData(TokenEnum format, Data data)
         {
             switch (format)
             {
                 case TokenEnum.Hex:
-                    var hex = data.ToHexString();
-                    Context.WriteOutputLine(formatReadable
-                        ? hex.SplitBySize(32).Select(l => l.SplitBySize(2).JoinToString(" ")).JoinToString(Context.EndOfLine)
-                        : hex);
+                    Context.WriteOutputLine(data.ToHexString());
+                    break;
+                case TokenEnum.FormatHex:
+                    const int BlockSize = 16;
+                    int hex_line_length = BlockSize * 2 + BlockSize - 1;
+                    data.GetBytes().SplitBySize(BlockSize).ForEach(block =>
+                    {
+                        var hex = block.ToHexString().SplitBySize(2).JoinToString(" ");
+                        var ascii = block.Select(c => c.IsPrintable() ? c : (byte)'.').ToArray();
+                        var line = hex
+                                    + new string(' ', hex_line_length - hex.Length + 5)
+                                    + ascii.GetData().ToAsciiString();
+                        Context.WriteOutputLine(line);
+                    });
                     break;
                 case TokenEnum.Bin:
-                    var bin = data.ToBinaryString();
-                    Context.WriteOutputLine(formatReadable
-                        ? bin.SplitBySize(64).Select(l => l.SplitBySize(8).JoinToString(" ")).JoinToString(Context.EndOfLine)
-                        : bin);
+                    Context.WriteOutputLine(data.ToBinaryString());
+                    break;
+                case TokenEnum.FormatBin:
+                    Context.WriteOutputLine(data.ToBinaryString()
+                        .SplitBySize(64)
+                        .Select(l => l.SplitBySize(8).JoinToString(" "))
+                        .JoinToString(Context.EndOfLine));
                     break;
                 case TokenEnum.Base64:
-                    var base64 = data.ToBase64String();
-                    Context.WriteOutputLine(formatReadable
-                        ? base64.SplitBySize(64).JoinToString(Context.EndOfLine)
-                        : base64);
+                    Context.WriteOutputLine(data.ToBase64String());
+                    break;
+                case TokenEnum.FormatBase64:
+                    Context.WriteOutputLine(data.ToBase64String()
+                        .SplitBySize(64)
+                        .JoinToString(Context.EndOfLine));
                     break;
                 case TokenEnum.Url:
                     Context.WriteOutputLine(Converter.UrlEncode(data));
@@ -121,7 +136,7 @@ namespace CipherTool.Interpret
                     var data = Evaluate(dataNode);
                     if (!(dataNode is DataFactor dataFactor && dataFactor.Operator is PrintOperator))
                     {
-                        WriteFormatData(dataNode.DefaultPrintFormat, data, false);
+                        WriteFormatData(dataNode.DefaultPrintFormat, data);
                     }
                     return;
                 case Assignment assignment:
@@ -191,7 +206,7 @@ namespace CipherTool.Interpret
                 case SubOperator subOperator:
                     return data.Sub(subOperator.Start, subOperator.Length);
                 case PrintOperator printOperator:
-                    WriteFormatData(printOperator.PrintFormat, data, printOperator.PrintReadable);
+                    WriteFormatData(printOperator.PrintFormat, data);
                     return data;
                 case SaveOperator saveOperator:
                     switch (saveOperator.DestType)

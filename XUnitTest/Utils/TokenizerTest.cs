@@ -20,7 +20,7 @@ namespace CipherTool.Test.Utils
         [Fact]
         public void TokenTypeValidationAttributeTest()
         {
-            var node = new PrintOperator(Tokenizer.TokenEnum.Unknown, false);
+            var node = new PrintOperator(Tokenizer.TokenEnum.Unknown);
             var validator = new NodeValidator();
             node.Accept(validator);
             Assert.True(validator.ValidationResults.Count > 0);

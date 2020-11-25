@@ -24,6 +24,9 @@ namespace CipherTool.Tokenizer
         [TokenDescription(T.DataSource, T.PrintFormat, T.EncodeFormat, T.DecodeFormat)] Url,
 
         [TokenDescription(T.DataSource, T.PrintFormat, Keywords = new string[] { "txt", "utf8" })] Txt,
+        [TokenDescription(T.PrintFormat, Alias = "hexf")] FormatHex,
+        [TokenDescription(T.PrintFormat, Alias = "binf")] FormatBin,
+        [TokenDescription(T.PrintFormat, Alias = "base64f")] FormatBase64,
         [TokenDescription(T.PrintFormat)] Ascii,
         [TokenDescription(T.PrintFormat, Alias = "auto")] AutoPrint,
         [TokenDescription(T.DecodeFormat)] Pem,
@@ -39,7 +42,6 @@ namespace CipherTool.Tokenizer
         [TokenDescription(T.DataFunction, Alias = "sub")] Sub,
 
         [TokenDescription(T.DataFunction)] Print,
-        [TokenDescription(T.DataFunction, Alias = "printf")] PrintReadable,
         [TokenDescription(T.DataFunction, Alias = "to")] SaveData,
 
         [TokenDescription(T.Hash)] Sm3,

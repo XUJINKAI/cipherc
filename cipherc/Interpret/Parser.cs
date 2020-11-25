@@ -124,9 +124,7 @@ namespace CipherTool.Interpret
                 case TokenEnum.Sub:
                     return new SubOperator(Tokens.ReadInt(), Tokens.ReadInt());
                 case TokenEnum.Print:
-                    return new PrintOperator(Tokens.ReadTokenEnum(TokenType.PrintFormat), false);
-                case TokenEnum.PrintReadable:
-                    return new PrintOperator(Tokens.ReadTokenEnum(TokenType.PrintFormat), true);
+                    return new PrintOperator(Tokens.ReadTokenEnum(TokenType.PrintFormat));
                 case TokenEnum.SaveData:
                     return Tokens.ReadTokenEnum(out var token2) switch
                     {

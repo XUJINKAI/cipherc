@@ -14,12 +14,9 @@ namespace CipherTool.AST
         [TokenTypeValidation(TokenType.PrintFormat)]
         public TokenEnum PrintFormat { get; }
 
-        public bool PrintReadable { get; }
-
-        public PrintOperator(TokenEnum format, bool readable)
+        public PrintOperator(TokenEnum format)
         {
             PrintFormat = format;
-            PrintReadable = readable;
         }
 
         public override void Accept([NotNull] IVisitor visitor) => visitor.Visit(this);
