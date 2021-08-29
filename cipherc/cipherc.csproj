@@ -16,9 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandDotNet" Version="4.1.3" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.8.8" />
+    <PackageReference Include="CommandDotNet" Version="4.1.13" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.10" />
     <PackageReference Include="ReadLine" Version="2.0.1" />
+    <PackageReference Include="sly" Version="2.7.0.3" />
   </ItemGroup>
 
 </Project>

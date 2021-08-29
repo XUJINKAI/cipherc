@@ -28,6 +28,8 @@
         /// has multiple properties and functions
         /// </summary>
         Object,
+
+        ObjectAction,
         Asym,
         Sym,
     }

@@ -61,6 +61,15 @@ namespace CipherTool.Interpret
                 var data = DataExpression();
                 return new Assignment(name, data);
             }
+            if (Tokens.Accept(TokenEnum.X509))
+            {
+                var node = new ParserObjectNode(TokenEnum.X509, DataExpression());
+                return node;
+            }
+            if (Tokens.Accept(TokenEnum.Pem))
+            {
+                return new ParserObjectNode(TokenEnum.Pem, DataExpression());
+            }
             // Expression
             return DataExpression();
         }

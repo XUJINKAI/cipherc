@@ -1,12 +1,11 @@
 ﻿using System;
-using CipherTool.Cipher;
 using CipherTool.Interpret;
 
 namespace CipherTool.Cli
 {
     internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (ENV.DEBUG)
             {
@@ -47,7 +46,7 @@ namespace CipherTool.Cli
             }
         }
 
-        static void IntoShell(Interpreter interpreter)
+        private static void IntoShell(Interpreter interpreter)
         {
             Console.WriteLine(HelpText.GetShellWhecomeText());
             ReadLine.HistoryEnabled = true;
@@ -68,7 +67,7 @@ namespace CipherTool.Cli
             } while (true);
         }
 
-        static void RunCmdArgs(Interpreter interpreter, string[] args)
+        private static void RunCmdArgs(Interpreter interpreter, string[] args)
         {
 #if DEBUG
             interpreter.Interpret(args);

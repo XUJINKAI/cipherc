@@ -2,8 +2,6 @@
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Web;
 using CipherTool.AST;
 using CipherTool.Cipher;
 using CipherTool.Cli;
@@ -45,17 +43,7 @@ namespace CipherTool.Interpret
                     Context.WriteOutputLine(data.ToHexString());
                     break;
                 case TokenEnum.FormatHex:
-                    const int BlockSize = 16;
-                    int hex_line_length = BlockSize * 2 + BlockSize - 1;
-                    data.GetBytes().SplitBySize(BlockSize).ForEach(block =>
-                    {
-                        var hex = block.ToHexString().SplitBySize(2).JoinToString(" ");
-                        var ascii = block.Select(c => c.IsPrintable() ? c : (byte)'.').ToArray();
-                        var line = hex
-                                    + new string(' ', hex_line_length - hex.Length + 5)
-                                    + ascii.GetData().ToAsciiString();
-                        Context.WriteOutputLine(line);
-                    });
+                    Context.WriteOutputLine(data.ToFormatHexText());
                     break;
                 case TokenEnum.Bin:
                     Context.WriteOutputLine(data.ToBinaryString());
@@ -138,6 +126,16 @@ namespace CipherTool.Interpret
                     {
                         WriteFormatData(dataNode.DefaultPrintFormat, data);
                     }
+                    return;
+                case ParserObjectNode parserObjectNode:
+                    IDataParserObject parser = parserObjectNode.ObjectType switch
+                    {
+                        TokenEnum.X509 => new X509(),
+                        TokenEnum.Pem => new Pem(),
+                        _ => throw new EvaluateException(nameof(Node)),
+                    };
+                    parser.LoadData(Evaluate(parserObjectNode.DataNode));
+                    Context.WriteOutputLine(parser.ToDisplayString());
                     return;
                 case Assignment assignment:
                     Context.Variables[assignment.VarName] = Evaluate(assignment.Data);
@@ -249,15 +247,12 @@ namespace CipherTool.Interpret
         private Data Evaluate(PipeDataPrimary node)
         {
             var pipeIn = ConsoleHelper.GetPipeAllTextIn();
-            switch (node.PipeFormat)
+            return node.PipeFormat switch
             {
-                case TokenEnum.Txt:
-                    return pipeIn;
-                case TokenEnum.File:
-                    return File.ReadAllBytes(pipeIn);
-                default:
-                    throw new EvaluateException(nameof(PipeDataPrimary));
-            }
+                TokenEnum.Txt => pipeIn,
+                TokenEnum.File => File.ReadAllBytes(pipeIn),
+                _ => throw new EvaluateException(nameof(PipeDataPrimary)),
+            };
         }
 
     }

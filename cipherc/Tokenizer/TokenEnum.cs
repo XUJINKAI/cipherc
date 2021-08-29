@@ -29,7 +29,6 @@ namespace CipherTool.Tokenizer
         [TokenDescription(T.PrintFormat, Alias = "base64f")] FormatBase64,
         [TokenDescription(T.PrintFormat)] Ascii,
         [TokenDescription(T.PrintFormat, Alias = "auto")] AutoPrint,
-        [TokenDescription(T.DecodeFormat)] Pem,
 
         [TokenDescription(T.DataSource)] Rand,
         [TokenDescription(T.DataSource)] Pipe,
@@ -52,6 +51,21 @@ namespace CipherTool.Tokenizer
         [TokenDescription(T.Hash)] Sha512,
         [TokenDescription(T.Hash)] Sha3,
 
-        [TokenDescription(T.Object)] X509,
+        [TokenDescription(T.Object, Keywords = new string[] { "x509", "cert" })] X509,
+        [TokenDescription(T.Object)] Pem,
+        [TokenDescription(T.Object)] Der,
+
+        [TokenDescription(T.Object)] Sm2,
+        [TokenDescription(T.Object)] Sm4,
+        [TokenDescription(T.Object)] Rsa1024,
+        [TokenDescription(T.Object)] Rsa4096,
+
+        [TokenDescription(T.ObjectAction)] GenNew,
+        [TokenDescription(T.ObjectAction)] Get,
+        [TokenDescription(T.ObjectAction)] Set,
+        [TokenDescription(T.ObjectAction)] Enc,
+        [TokenDescription(T.ObjectAction)] Dec,
+        [TokenDescription(T.ObjectAction)] Sign,
+        [TokenDescription(T.ObjectAction)] Verify,
     }
 }
