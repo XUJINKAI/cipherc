@@ -50,10 +50,17 @@ namespace CipherTool.Cli
         {
             Console.WriteLine(HelpText.GetShellWhecomeText());
             ReadLine.HistoryEnabled = true;
+            ReadLine.AutoCompletionHandler = new AutoCompletionHandler();
             do
             {
                 var line = ReadLine.Read("> ");
                 if (line == null) continue;
+
+                if (line.StartsWith("!"))
+                {
+                    Utils.CommandRunner.System(line[1..]);
+                    continue;
+                }
 
                 var lineArgs = NativeMethods.CommandLineToArgs(line);
                 if (lineArgs.Length == 0) { continue; }
