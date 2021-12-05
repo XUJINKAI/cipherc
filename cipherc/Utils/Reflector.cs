@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CipherTool.Utils
+namespace cipherc.Utils
 {
     public static class Reflector
     {

@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30517.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cipherc", "cipherc\cipherc.csproj", "{D1640197-951F-4C7C-A3D8-3608B5A311A5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XUnitTest", "XUnitTest\XUnitTest.csproj", "{0FDD41CB-DAFE-4355-A178-85F7FC8C55E2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F1E17CBB-F1E8-4B57-9213-F69DD23B3406}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,6 +11,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\compile_test.yml = .github\workflows\compile_test.yml
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "libcipherc", "libcipherc\libcipherc.csproj", "{5C98B01E-F583-4C1A-B8B9-AC529E4BF61D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "libciphercTest", "libciphercTest\libciphercTest.csproj", "{E3662F69-3E1A-4383-9810-65B77825FA9F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ciphercTest", "ciphercTest\ciphercTest.csproj", "{7D7E68E8-E5C1-4E97-9049-A4C3684E12D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,10 +28,18 @@ Global
 		{D1640197-951F-4C7C-A3D8-3608B5A311A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1640197-951F-4C7C-A3D8-3608B5A311A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1640197-951F-4C7C-A3D8-3608B5A311A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0FDD41CB-DAFE-4355-A178-85F7FC8C55E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0FDD41CB-DAFE-4355-A178-85F7FC8C55E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0FDD41CB-DAFE-4355-A178-85F7FC8C55E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0FDD41CB-DAFE-4355-A178-85F7FC8C55E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C98B01E-F583-4C1A-B8B9-AC529E4BF61D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C98B01E-F583-4C1A-B8B9-AC529E4BF61D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C98B01E-F583-4C1A-B8B9-AC529E4BF61D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C98B01E-F583-4C1A-B8B9-AC529E4BF61D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3662F69-3E1A-4383-9810-65B77825FA9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3662F69-3E1A-4383-9810-65B77825FA9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3662F69-3E1A-4383-9810-65B77825FA9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3662F69-3E1A-4383-9810-65B77825FA9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D7E68E8-E5C1-4E97-9049-A4C3684E12D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D7E68E8-E5C1-4E97-9049-A4C3684E12D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D7E68E8-E5C1-4E97-9049-A4C3684E12D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D7E68E8-E5C1-4E97-9049-A4C3684E12D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,28 +1,45 @@
 ﻿# cipherc
 
-An english-like bytes data process/cipher DSL.
+**WIP: 程序开发中，尚无法使用**
 
-e.g.
+cipherc是一款密码算法命令行工具，支持国密算法(SM2、SM3、SM4)及常见国际算法，同时支持各种常见的数据格式解析及转换。
+
+# 示例
+
+- 生成一串16字节的随机数，打印其hex, base64格式，同时保存到文件中
 
 ```bash
-# transform data format
-> hex 61626364 print base64
-
-# hash data multiple times
-> txt "Welcome to Cipherc" sm3 md5 sha1
-
-# hash multiple times and print intermediate result
-> txt "Welcome to Cipherc" sm3 print hex sm3 print hex
-
-# store random data in variable x, then store it's sm3 hash in variable hash_x
-> var x is rand 32 then var hash_x is var x sm3
+rand 16 --dump hex,base64 --out rand.bin
+# 输出：
+# 78756A696E6B61692E6E65745F5F5F5F
+# eHVqaW5rYWkubmV0X19fXw==
 ```
 
-See more [wiki/Examples.md](wiki/Examples.md)
+- 将base64格式数据转换为C语言字符串格式
 
-## Grammar
+```bash
+base64 "Y2lwaGVyYw==" --dump hex.c
+# 输出：\x63\x69\x70\x68\x65\x72\x63
+```
 
-See [wiki/Grammar.md](wiki/Grammar.md)
+- 计算SM3杂凑值，默认向屏幕打印其hex值
+
+```bash
+# [-f] 指示输入为文件名
+sm3 -f <file-path>
+# 否则默认输入为hex值
+sm3 00aaFF
+```
+
+- SM4解密文件，将结果转换为utf8字符串打印到屏幕上
+
+```bash
+sm4 -d -K 0123456789ABCDEFFEDCBA9876543210 --iv 0 -f <file-path> --dump utf8
+```
+
+[核心测试](ciphercTest/Core_Test.cs)
+
+[使用说明](docs/usage.md)
 
 ## LICENSE
 

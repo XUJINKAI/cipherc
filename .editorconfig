@@ -23,3 +23,6 @@ dotnet_diagnostic.CA1054.severity = silent
 
 # CA1055: 类 URI 返回值不应是字符串
 dotnet_diagnostic.CA1055.severity = silent
+
+# IDE0090: 使用 "new(...)"
+dotnet_diagnostic.IDE0090.severity = silent

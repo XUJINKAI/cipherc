@@ -1,7 +1,9 @@
 {
   "profiles": {
     "cipherc": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "workingDirectory": "../TestFiles"
     }
   }
 }
