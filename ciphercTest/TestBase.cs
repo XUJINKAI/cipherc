@@ -56,28 +56,37 @@ public class TestBase
     protected MemoryOutput RunCommand(string command)
     {
         var result = new MemoryOutput();
-        var args = cipherc.Utils.CommandLineHelper.CommandLineToArgs(command);
-        _parser.Parse(args).Invoke(result);
-
-        AppendLine(command);
-        var errmsg = result.GetErrorResult();
-        if (!string.IsNullOrWhiteSpace(errmsg))
+        try
         {
-            AppendLine("// Error");
-            AppendLine(errmsg.TrimEnd());
+            var args = cipherc.Utils.CommandLineHelper.CommandLineToArgs(command);
+            _parser.Parse(args).Invoke(result);
         }
-        var outmsg = result.GetOutResult();
-        if (!string.IsNullOrWhiteSpace(outmsg))
+        catch
         {
-            AppendLine("// Out");
-            AppendLine(outmsg.TrimEnd());
+            throw;
         }
-        var bytes = result.GetByteResult();
-        if (bytes.Length > 0)
+        finally
         {
-            bool isAscii = bytes.IsPrintableAscii(true);
-            AppendLine("// Bytes: " + (isAscii ? "Text" : "HexDump"));
-            AppendLine(isAscii ? bytes.ToAsciiString() : bytes.ToHexDumpText());
+            AppendLine(command);
+            var errmsg = result.GetErrorResult();
+            if (!string.IsNullOrWhiteSpace(errmsg))
+            {
+                AppendLine("// Error");
+                AppendLine(errmsg.TrimEnd());
+            }
+            var outmsg = result.GetOutResult();
+            if (!string.IsNullOrWhiteSpace(outmsg))
+            {
+                AppendLine("// Out");
+                AppendLine(outmsg.TrimEnd());
+            }
+            var bytes = result.GetByteResult();
+            if (bytes.Length > 0)
+            {
+                var dump = bytes.AutoDump(out var form);
+                AppendLine("// Bytes: " + form);
+                AppendLine(dump);
+            }
         }
         return result;
     }

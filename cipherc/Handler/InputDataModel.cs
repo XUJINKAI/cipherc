@@ -17,7 +17,7 @@ namespace cipherc.Handler
 
         public string Input { get; }
 
-        public string Inform { get; }
+        public string? Inform { get; }
 
         public bool IsFile { get; }
 
@@ -25,7 +25,7 @@ namespace cipherc.Handler
 
         public ICommand Command { get; }
 
-        public InputDataModel(IOutput output, ICommand command, string input, string inform, bool f)
+        public InputDataModel(IOutput output, ICommand command, string input, string? inform, bool f)
         {
             output.VerboseLine($"InputDataModel: Input: {input}, Inform: {inform}, IsFile: {f}");
             Output = output; ;
@@ -39,7 +39,7 @@ namespace cipherc.Handler
         {
             byte[] result = IsFile
                 ? DATA.FILE(Input)
-                : Inform.ToLower() switch
+                : Inform?.ToLower() switch
                 {
                     "hex" => DATA.HEX(Input),
                     "base64" => DATA.BASE64(Input),
@@ -50,6 +50,14 @@ namespace cipherc.Handler
                     _ => throw new ParseErrorException($"Inform not valid: {Inform}", Command),
                 };
             Output.VerboseLine($"InputData[{result.Length}]: " + (result.Length > 64 ? (result.SubFirst(64).ToHexString() + "...") : result.ToHexString()));
+            return result;
+        }
+
+        public string GetString()
+        {
+            string result = IsFile
+                ? TEXT.FILE(Input)
+                : Input;
             return result;
         }
     }

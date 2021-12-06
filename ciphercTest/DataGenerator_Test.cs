@@ -17,22 +17,28 @@ namespace ciphercTest
         [Fact]
         public void Zero_1_Verbose()
         {
-            Assert.Equal(HEX("00"), RunCommand("zero 1 --verbose 3").GetByteResult());
+            var result = RunCommand("zero 1 --verbose");
+            Assert.Equal(HEX("00"), result.GetByteResult());
         }
 
 
         [Fact]
         public void Zero_8()
         {
-            Assert.Equal(HEX("0000000000000000"), RunCommand("zero 8").GetByteResult());
+            var result = RunCommand("zero 8");
+            Assert.Equal("0000000000000000" + EOL, result.GetOutResult());
+            Assert.Equal(HEX("0000000000000000"), result.GetByteResult());
         }
 
 
         [Fact]
         public void Zero_8_base64()
         {
-            var expect = Convert.ToBase64String(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 });
-            Assert.Equal(expect.GetBytes(), RunCommand("zero 8 --outform base64").GetByteResult());
+            var result = RunCommand("zero 8 --dump base64");
+            var data = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+            var data_base64 = Convert.ToBase64String(data);
+            Assert.Equal(data_base64 + EOL, result.GetOutResult());
+            Assert.Equal(data, result.GetByteResult());
         }
 
         [Fact]

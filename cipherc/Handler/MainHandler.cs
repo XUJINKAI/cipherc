@@ -31,12 +31,19 @@ namespace cipherc.Handler
             };
         }
 
+        public void DataLoaderHandler(IOutput output, InputDataModel input)
+        {
+            var data = input.GetBytes();
+            output.WriteBytes(data, DumpForm.Auto);
+        }
+
         public void Base64Handler(IOutput output, InputDataModel input, bool decode, bool breakLines)
         {
             if (decode)
             {
-                var result = Convert.FromBase64String(input.Input);
-                output.WriteBytes(result, DumpForm.UTF8);
+                var data = input.GetString();
+                var result = DATA.BASE64(data);
+                output.WriteBytes(result, DumpForm.Auto);
             }
             else
             {
@@ -99,7 +106,7 @@ namespace cipherc.Handler
 
             if (!__noout)
             {
-                output.WriteBytes(new FormBytes(bytes, DumpForm.Hex));
+                output.WriteBytes(bytes, DumpForm.Hex);
             }
         }
 
@@ -167,7 +174,7 @@ namespace cipherc.Handler
                 _ => throw new NotImplementedException($""),
             };
 
-            output.WriteBytes(new FormBytes(result, DumpForm.Hex));
+            output.WriteBytes(result, DumpForm.Hex);
         }
     }
 }

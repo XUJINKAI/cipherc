@@ -1,6 +1,4 @@
-﻿# cipherc
-
-**WIP: 程序开发中，尚无法使用**
+﻿# cipherc (WIP)
 
 cipherc是一款密码算法命令行工具，支持国密算法(SM2、SM3、SM4)及常见国际算法，同时支持各种常见的数据格式解析及转换。
 
@@ -10,7 +8,7 @@ cipherc是一款密码算法命令行工具，支持国密算法(SM2、SM3、SM4
 
 ```bash
 rand 16 --dump hex,base64 --out rand.bin
-# 输出：
+# 输出:
 # 78756A696E6B61692E6E65745F5F5F5F
 # eHVqaW5rYWkubmV0X19fXw==
 ```
@@ -19,7 +17,7 @@ rand 16 --dump hex,base64 --out rand.bin
 
 ```bash
 base64 "Y2lwaGVyYw==" --dump hex.c
-# 输出：\x63\x69\x70\x68\x65\x72\x63
+# 输出: \x63\x69\x70\x68\x65\x72\x63
 ```
 
 - 计算SM3杂凑值，默认向屏幕打印其hex值
@@ -29,6 +27,7 @@ base64 "Y2lwaGVyYw==" --dump hex.c
 sm3 -f <file-path>
 # 否则默认输入为hex值
 sm3 00aaFF
+# 输出: 72E7CA83F1A17EAECE95BB01D3C859F8A86592C313971F714CFD97D1381A6DF0
 ```
 
 - SM4解密文件，将结果转换为utf8字符串打印到屏幕上

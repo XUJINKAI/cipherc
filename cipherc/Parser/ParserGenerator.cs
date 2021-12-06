@@ -66,9 +66,15 @@ data        rand        zero
                 new Command("zero", "Generate all zero bytes").AddArgOpt_DataGenerator()
                 .WithHandler(H.CreateDataIntGenerator(DATA.ZEROS, DumpForm.Hex)),
 
+                // Data loader
+                new Command("data", "Load data and transform")
+                .AddArgOpt_Input_inform_f()
+                .AddOption_Out_Dump()
+                .WithHandler(H.DataLoaderHandler),
+
                 // Trans
                 new Command("base64", "Base64 encode or decode")
-                .AddArgOpt_Input_inform_f()
+                .AddArgOpt_Input_inform_f("utf8")
                 .AddOptions(new Option<bool>(new string[]{"-d", "--decode" }, "Indicate decode or encode"))
                 .AddOptions(new Option<bool>(new string[]{"-b", "--break-lines" }, "Break base64 string every 64 chars"))
                 .AddOption_Out_Dump()
@@ -85,6 +91,22 @@ data        rand        zero
                 .AddOption_Out_Dump()
                 .WithHandler(H.CreateDataEncoder(Hash.MD5, DumpForm.Hex)),
 
+                new Command("sha1", "Hash by SHA1")
+                .AddArgOpt_Input_inform_f()
+                .AddOption_Out_Dump()
+                .WithHandler(H.CreateDataEncoder(Hash.SHA1, DumpForm.Hex)),
+
+                new Command("sha256", "Hash by SHA256")
+                .AddArgOpt_Input_inform_f()
+                .AddOption_Out_Dump()
+                .WithHandler(H.CreateDataEncoder(Hash.SHA256, DumpForm.Hex)),
+
+                new Command("sha512", "Hash by SHA256")
+                .AddArgOpt_Input_inform_f()
+                .AddOption_Out_Dump()
+                .WithHandler(H.CreateDataEncoder(Hash.SHA512, DumpForm.Hex)),
+
+                // Sym
                 new Command("sm4", "SM4 encrypt or decrypt data")
                 {
                     new Option<string>(new string[] {"-K", "--key"}, "Sym Key: Hex string"),
@@ -136,7 +158,7 @@ data        rand        zero
                     new Command("log", "Write all type output")
                     .WithHandler((IOutput output) =>
                     {
-                        output.WriteBytes("Byte".GetBytes().ToFormBytes(DumpForm.Hex));
+                        output.WriteBytes("Byte".GetBytes(), DumpForm.Hex);
                         output.Write("Write-");
                         output.WriteLine("WriteLine");
                         output.ErrorLine("Log Error");
@@ -148,7 +170,7 @@ data        rand        zero
                 .WithHandler((IOutput output) =>
                 {
                     output.WriteLine($"YES.");
-                    output.WriteBytes(new FormBytes(new byte[]{ 0x61, 0x62, 0x63 }, DumpForm.Base64));
+                    output.WriteBytes(new byte[]{ 0x61, 0x62, 0x63 }, DumpForm.Base64);
                 }),
 #endif
             }.AddGlobalOptions(

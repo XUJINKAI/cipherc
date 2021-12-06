@@ -35,7 +35,7 @@ public class Core_Test : TestBase
     public void Base64_Encode_Utf8Text()
     {
         var result = RunCommand("base64 cipherc");
-        Assert.Equal("Y2lwaGVyYw==", result.GetOutResult());
+        Assert.Equal("Y2lwaGVyYw==" + EOL, result.GetOutResult());
         //Assert.Equal("cipherc", result.GetByteResult());
     }
 
@@ -57,7 +57,7 @@ public class Core_Test : TestBase
     [Fact]
     public void Base64_DecodeFile()
     {
-        var result = RunCommand("base64 -d author.base64.txt");
+        var result = RunCommand("base64 -df author.base64.txt");
         Assert.Equal("[UTF8] xujinkai" + EOL, result.GetOutResult());
         Assert.Equal("xujinkai".GetBytes(), result.GetByteResult());
     }
