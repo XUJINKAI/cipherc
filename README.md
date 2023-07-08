@@ -1,4 +1,6 @@
-﻿# cipherc (WIP)
+﻿# remake by C: https://github.com/XUJINKAI/xx-crypto-cli
+
+# cipherc (WIP)
 
 cipherc是一款密码算法命令行工具，支持国密算法(SM2、SM3、SM4)及常见国际算法，同时支持各种常见的数据格式解析及转换。
 
